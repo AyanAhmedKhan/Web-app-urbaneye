@@ -10,3 +10,9 @@ Flask-JWT-Extended==4.6.0
 bcrypt==4.1.2
 Flask-SQLAlchemy==3.1.1
 psycopg2-binary==2.9.9
+langchain
+langchain-community
+langchain-google-genai
+pydantic
+duckduckgo-search
+requests
