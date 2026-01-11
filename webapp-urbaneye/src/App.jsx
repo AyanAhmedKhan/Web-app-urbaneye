@@ -14,9 +14,8 @@ import SuperAdminDashboard from './components/Dashboard/SuperAdminDashboard';
 import GovAdminDashboard from './components/Dashboard/GovAdminDashboard';
 import DeptHeadDashboard from './components/Dashboard/DeptHeadDashboard';
 import FieldOfficerDashboard from './components/Dashboard/FieldOfficerDashboard';
-import CivilianDashboard from './components/Dashboard/CivilianDashboard';
-
-
+import NotFound from './pages/NotFound';
+import Unauthorized from './pages/Unauthorized';
 
 function App() {
     return (
@@ -25,6 +24,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/secret-admin" element={<SecretAdmin />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
                 {/* Standalone Super Admin Dashboard - No Layout/Navbar */}
                 <Route
@@ -106,6 +106,9 @@ function App() {
                         }
                     />
                 </Route>
+
+                {/* Catch-all 404 */}
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </AuthProvider>
     );

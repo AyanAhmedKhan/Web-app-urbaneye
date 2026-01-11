@@ -216,6 +216,45 @@ const Login = () => {
                             </button>
                         </form>
 
+                        {/* Demo Credentials - Auto-fill Helper */}
+                        <div className="mt-8 bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Demo Credentials</h3>
+                            <div className="space-y-2">
+                                <button
+                                    onClick={() => { setEmail('admin@gov.in'); setPassword('ayankhan'); }}
+                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
+                                >
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-slate-700">Gov Admin</span>
+                                        <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-mono">admin@gov.in</span>
+                                    </div>
+                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
+                                </button>
+
+                                <button
+                                    onClick={() => { setEmail('ayan.ahmedkhan591@gmail.com'); setPassword('ayankhan'); }}
+                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
+                                >
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-slate-700">Civilian</span>
+                                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded font-mono">ayan.ahmedkhan591@gmail.com</span>
+                                    </div>
+                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
+                                </button>
+
+                                <button
+                                    onClick={() => { setEmail('ayanpthan768@gmail.com'); setPassword('ayankhan'); }}
+                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
+                                >
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-slate-700">Super Admin</span>
+                                        <span className="text-[10px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded font-mono">ayanpthan768@gmail.com</span>
+                                    </div>
+                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="mt-8 text-center">
                             <p className="text-slate-500 font-medium">
                                 New to UrbanEye?{' '}
@@ -226,8 +265,8 @@ const Login = () => {
                         </div>
                     </div>
                 </motion.div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

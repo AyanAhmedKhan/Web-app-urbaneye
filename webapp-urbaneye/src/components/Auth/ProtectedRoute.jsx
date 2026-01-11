@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, roles = [] }) => {
 
     if (roles.length > 0 && !hasRole(roles)) {
         // User authenticated but not authorized
-        return <Navigate to="/" replace />;
+        return <Navigate to="/unauthorized" replace />;
     }
 
     return children;

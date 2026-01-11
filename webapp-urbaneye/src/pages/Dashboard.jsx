@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -268,28 +268,24 @@ const Dashboard = () => {
         </div>
     );
 
-    // Super Admin Dashboard - Redirect to standalone page
-    if (user?.role === 'super_admin') {
-        navigate('/super-admin-dashboard', { replace: true });
-        return null;
-    }
+    // Role-based redirection using useEffect to avoid render-phase side effects
+    useEffect(() => {
+        if (!user) return;
 
-    // Gov Admin Dashboard
-    if (user?.role === 'gov_admin') {
-        navigate('/gov-admin-dashboard', { replace: true });
-        return null;
-    }
+        if (user.role === 'super_admin') {
+            navigate('/super-admin-dashboard', { replace: true });
+        } else if (user.role === 'gov_admin') {
+            navigate('/gov-admin-dashboard', { replace: true });
+        } else if (user.role === 'dept_head') {
+            navigate('/dept-head-dashboard', { replace: true });
+        } else if (user.role === 'field_officer') {
+            navigate('/field-officer-dashboard', { replace: true });
+        }
+    }, [user, navigate]);
 
-    // Dept Head Dashboard
-    if (user?.role === 'dept_head') {
-        navigate('/dept-head-dashboard', { replace: true });
-        return null;
-    }
-
-    // Field Officer Dashboard
-    if (user?.role === 'field_officer') {
-        navigate('/field-officer-dashboard', { replace: true });
-        return null;
+    // Return null while redirecting for these specific roles
+    if (['super_admin', 'gov_admin', 'dept_head', 'field_officer'].includes(user?.role)) {
+        return null; // Or a unified loading spinner
     }
 
     // Gig Worker Dashboard
