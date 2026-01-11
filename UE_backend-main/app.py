@@ -62,7 +62,12 @@ class PredictionList(BaseModel):
 
 load_dotenv()
 import auth_utils
+from utils.mail_service import mail, send_welcome_email
+
+
+
 from models import db, User, Report, ReportLog, Worker, Job, Booking, NGORequest, EmployeeProfile, Attendance, Payroll, Candidate
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -145,6 +150,16 @@ def load_users():
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app, origins=['*'])  # Enable CORS for Flutter app integration
+
+# Email Configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'urbaneye.official@gmail.com' # Placeholder
+app.config['MAIL_PASSWORD'] = 'oldn mecr hqek ywqe' # Provided App Password
+app.config['MAIL_DEFAULT_SENDER'] = ('UrbanEye Team', 'urbaneye.official@gmail.com')
+
+mail.init_app(app)
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///local_test.db')
@@ -707,19 +722,23 @@ class Signup(Resource):
         password = data.get('password')
         name = data.get('name', 'Community Member') # Default name if not provided
         
-        if User.query.filter_by(email=email).first():
+        if User.query.filter_by(email=data['email']).first():
             return {'message': 'Email already registered'}, 409
             
+        hashed_pw = auth_utils.hash_password(data['password'])
         new_user = User(
-            email=email,
-            password_hash=auth_utils.hash_password(password),
-            name=name,
-            role='civilian' # Default role
+            name=data['name'],
+            email=data['email'],
+            password_hash=hashed_pw, # Assuming User model has password_hash field
+            role='civilian'  # Default role
         )
         
         db.session.add(new_user)
         db.session.commit()
         
+        # Send Welcome Email
+        send_welcome_email(new_user.email, new_user.name)
+
         return {'message': 'User created successfully', 'success': True}, 201
 
 @auth_ns.route('/login')
@@ -1793,9 +1812,20 @@ class ReportCreate(Resource):
             updated_by=current_user_id
         ))
         
+        
         db.session.add(new_report)
         db.session.commit()
         
+        # Send Email Confirmation
+        # Check if user has email (should be available from Authorizer check or DB fetch)
+        try:
+             user = User.query.get(current_user_id)
+             if user and user.email:
+                 from utils.mail_service import send_report_confirmation
+                 send_report_confirmation(user.email, user.name, new_report.id, new_report.category.capitalize(), f"{new_report.latitude}, {new_report.longitude}")
+        except Exception as e:
+             logger.error(f"Email sending failed: {e}")
+
         return {'success': True, 'message': 'Ticket created successfully', 'report': new_report.to_dict()}, 201
 
 

@@ -15,4 +15,4 @@ langchain-community
 langchain-google-genai
 pydantic
 duckduckgo-search
-requests
+Flask-Mail==0.9.1
