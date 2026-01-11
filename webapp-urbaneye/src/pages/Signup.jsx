@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, ArrowRight, AlertCircle, Loader2, Activity, Sparkles, Eye, CheckCircle } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, AlertCircle, Loader2, Activity, Sparkles, Eye, CheckCircle, Trophy } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 
 const Signup = () => {
@@ -217,7 +217,6 @@ const Signup = () => {
     );
 };
 
-// Missing Trophy import, adding it in next step or assuming it's imported
-import { Trophy } from 'lucide-react';
+
 
 export default Signup;

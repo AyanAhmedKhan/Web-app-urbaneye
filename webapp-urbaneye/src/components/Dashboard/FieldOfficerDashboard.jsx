@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import '../Dashboard/GovAdminDashboard.css'; // Reusing Gov Admin styles
 
-const API_BASE = 'http://localhost:5000/api/v1';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/v1';
 
 const FieldOfficerDashboard = () => {
     const { user, logout } = useAuth();

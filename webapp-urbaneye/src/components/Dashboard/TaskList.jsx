@@ -13,7 +13,8 @@ const TaskList = () => {
 
     const fetchTasks = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/v1/reports');
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.get(`${API_URL}/api/v1/reports`);
             if (res.data.success) {
                 setTasks(res.data.reports);
             }
@@ -26,7 +27,8 @@ const TaskList = () => {
 
     const updateStatus = async (id, newStatus) => {
         try {
-            await axios.put(`http://localhost:5000/api/v1/reports/${id}/status`, { status: newStatus });
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.put(`${API_URL}/api/v1/reports/${id}/status`, { status: newStatus });
             fetchTasks(); // Refresh
         } catch (err) {
             console.error("Failed to update status", err);

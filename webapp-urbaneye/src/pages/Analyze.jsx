@@ -115,7 +115,8 @@ const Analyze = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/v1/detection/analyze', formData, {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.post(`${API_URL}/api/v1/detection/analyze`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -141,7 +142,8 @@ const Analyze = () => {
         if (type === 'gig') {
             try {
                 const token = localStorage.getItem('token');
-                await axios.post('http://localhost:5000/api/v1/gig/jobs', {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                await axios.post(`${API_URL}/api/v1/gig/jobs`, {
                     report_id: currentReportId,
                     service_type: 'gig'
                 }, {

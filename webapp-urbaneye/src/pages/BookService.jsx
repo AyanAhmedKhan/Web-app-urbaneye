@@ -43,7 +43,8 @@ const BookService = () => {
     const fetchReports = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/v1/reports/my', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.get(`${API_URL}/api/v1/reports/my`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -58,7 +59,8 @@ const BookService = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/v1/bookings', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.post(`${API_URL}/api/v1/bookings`, {
                 report_id: selectedReport?.id,
                 service_type: serviceType,
                 time_slot: timeSlot

@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/v1/auth/login', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await axios.post(`${API_URL}/api/v1/auth/login`, {
                 email,
                 password
             });
@@ -56,7 +57,8 @@ export const AuthProvider = ({ children }) => {
     // Google OAuth login
     const googleLogin = async (credentialResponse) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/v1/auth/google', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await axios.post(`${API_URL}/api/v1/auth/google`, {
                 credential: credentialResponse.credential
             });
 
@@ -80,7 +82,8 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, email, password) => {
         try {
-            await axios.post('http://localhost:5000/api/v1/auth/signup', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            await axios.post(`${API_URL}/api/v1/auth/signup`, {
                 name,
                 email,
                 password

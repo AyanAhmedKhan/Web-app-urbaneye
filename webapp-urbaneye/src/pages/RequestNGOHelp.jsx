@@ -43,7 +43,8 @@ const RequestNGOHelp = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/v1/ngo/requests', formData, {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const res = await axios.post(`${API_URL}/api/v1/ngo/requests`, formData, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
