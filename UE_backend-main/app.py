@@ -24,8 +24,8 @@ import requests  # Import requests outside try block so it's always available
 try:
     from langchain_community.tools import DuckDuckGoSearchRun
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain.prompts import PromptTemplate
-    from langchain.output_parsers import PydanticOutputParser
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.output_parsers import PydanticOutputParser
     # User standard Pydantic V2 to avoid 'model_json_schema' errors
     from pydantic import BaseModel, Field
 except ImportError as e:
