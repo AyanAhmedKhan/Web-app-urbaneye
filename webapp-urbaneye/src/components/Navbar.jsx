@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, LogOut, User, Activity, Shield, Home, Sparkles, LayoutDashboard, ChevronRight } from 'lucide-react';
+import { Menu, X, LogOut, User, Activity, Shield, Home, Sparkles, LayoutDashboard, ChevronRight, Eye } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
@@ -66,7 +66,7 @@ const Navbar = () => {
                                 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110
                                 ${isScrolled ? 'bg-indigo-100' : 'bg-white/10 backdrop-blur-sm'}
                             `}>
-                                <Activity className={`${isScrolled ? 'text-indigo-600' : 'text-indigo-600'}`} size={22} />
+                                <Eye className={`${isScrolled ? 'text-indigo-600' : 'text-indigo-600'}`} size={22} />
                             </div>
                             <span className={`text-xl font-black tracking-tight ${isScrolled ? 'text-slate-900' : 'text-slate-900'}`}>
                                 Urban<span className="text-indigo-600">Eye</span>
@@ -190,7 +190,7 @@ const Navbar = () => {
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                                <Activity className="text-indigo-600" size={22} />
+                                <Eye className="text-indigo-600" size={22} />
                             </div>
                             <span className="text-xl font-black text-slate-900">
                                 Urban<span className="text-indigo-600">Eye</span>

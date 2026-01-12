@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Activity, Map, Upload, Sparkles, Shield, Users, Trophy, Star, ChevronRight, Play, CheckCircle, Zap, Building, MapPin } from 'lucide-react';
+import { ArrowRight, Activity, Map, Upload, Sparkles, Shield, Users, Trophy, Star, ChevronRight, Play, CheckCircle, Zap, Building, MapPin, Download, Smartphone, Eye } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import axios from 'axios';
@@ -21,6 +21,8 @@ const Home = () => {
     const leaderboardRef = useRef(null);
     const isFeaturesInView = useInView(featuresRef, { once: true, margin: "-100px" });
     const isLeaderboardInView = useInView(leaderboardRef, { once: true, margin: "-100px" });
+    const videoRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const { scrollYProgress } = useScroll({
         target: heroRef,
@@ -135,9 +137,9 @@ const Home = () => {
                             >
                                 <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-600 px-4 py-2 rounded-full text-sm font-bold mb-6">
                                     <Sparkles size={16} className="animate-pulse" />
-                                    Powered by Google Gemini AI
+                                    Powered by UrbanAI Engine™
                                 </div>
-                                <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
+                                <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
                                     Empowering Citizens,
                                     <br />
                                     <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
@@ -164,7 +166,7 @@ const Home = () => {
                             >
                                 <NavLink
                                     to="/analyze"
-                                    className="group flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-200 hover:shadow-2xl hover:-translate-y-1 transition-all"
+                                    className="group flex items-center gap-2 sm:gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl shadow-indigo-200 hover:shadow-2xl hover:-translate-y-1 transition-all"
                                 >
                                     <Sparkles size={20} />
                                     Try AI Analysis
@@ -172,7 +174,7 @@ const Home = () => {
                                 </NavLink>
                                 <NavLink
                                     to={getDashboardRoute()}
-                                    className="group flex items-center gap-3 bg-white hover:bg-slate-50 text-slate-700 px-8 py-4 rounded-2xl font-bold text-lg border-2 border-slate-200 hover:border-slate-300 transition-all"
+                                    className="group flex items-center gap-2 sm:gap-3 bg-white hover:bg-slate-50 text-slate-700 px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg border-2 border-slate-200 hover:border-slate-300 transition-all"
                                 >
                                     <Play size={18} className="text-indigo-600" />
                                     View Live Map
@@ -267,12 +269,12 @@ const Home = () => {
                                     className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 shadow-xl border border-slate-100"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                                            <Sparkles size={20} className="text-indigo-600" />
+                                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                            <Eye size={20} className="text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-xs text-slate-400">AI Accuracy</p>
-                                            <p className="font-bold text-slate-800">98.5%</p>
+                                            <p className="text-xs text-slate-400">UrbanAI Engine™</p>
+                                            <p className="font-bold text-slate-800 text-sm">Vision Tech</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -317,6 +319,58 @@ const Home = () => {
                             </motion.div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Video Showcase Section */}
+            <section className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8 }}
+                        viewport={{ once: true }}
+                        className="relative rounded-3xl overflow-hidden shadow-2xl"
+                    >
+                        <div className="aspect-w-16 aspect-h-9 bg-slate-900 relative group" style={{ aspectRatio: '16/9' }}>
+                            {/* Placeholder Video / Overlay */}
+                            {!isPlaying && (
+                                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition-all">
+                                    <motion.button
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => {
+                                            if (videoRef.current) {
+                                                videoRef.current.play();
+                                                setIsPlaying(true);
+                                            }
+                                        }}
+                                        className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-lg group-hover:bg-white/30 transition-all cursor-pointer"
+                                    >
+                                        <Play size={32} className="text-white fill-white ml-1" />
+                                    </motion.button>
+
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none">
+                                        <h3 className="text-3xl font-bold text-white mb-2">See UrbanEye in Action</h3>
+                                        <p className="text-white/80 text-lg">Watch how we're transforming city management, one report at a time.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* You can replace the src with your actual video or use an iframe */}
+                            <video
+                                ref={videoRef}
+                                className="w-full h-full object-cover"
+                                poster="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=2000&q=80"
+                                controls
+                                onPause={() => setIsPlaying(false)}
+                            >
+                                {/* Place your video file named 'city_video.mp4' in the 'public' folder */}
+                                <source src="/AdVideo.mp4" type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -529,6 +583,174 @@ const Home = () => {
                 </div>
             </section>
 
+
+            {/* App Download Section */}
+            <section className="py-24 bg-slate-900 relative overflow-hidden border-t border-white/10">
+                {/* Animated Background Orbs */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-1/4 -right-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 -left-20 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                </div>
+
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-indigo-500/30 flex flex-col md:flex-row items-center gap-12"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, x: -30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            viewport={{ once: true }}
+                            className="flex-1 space-y-6"
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.4, delay: 0.3 }}
+                                viewport={{ once: true }}
+                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-sm font-medium"
+                            >
+                                <Smartphone size={16} />
+                                <span>Mobile App Available</span>
+                            </motion.div>
+                            <motion.h2
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.4 }}
+                                viewport={{ once: true }}
+                                className="text-3xl md:text-5xl font-black text-white leading-tight"
+                            >
+                                Report Issues on the Go
+                            </motion.h2>
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.5 }}
+                                viewport={{ once: true }}
+                                className="text-lg text-slate-300"
+                            >
+                                Download the UrbanEye mobile app to instantly report civic issues, track status updates, and earn rewards directly from your smartphone.
+                            </motion.p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.6 }}
+                                viewport={{ once: true }}
+                                className="flex flex-wrap gap-4 pt-4"
+                            >
+                                <a
+                                    href="/app-release.apk"
+                                    className="group flex items-center gap-3 bg-white text-indigo-900 px-6 py-3.5 rounded-xl font-bold hover:bg-indigo-50 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
+                                    download
+                                >
+                                    <Download size={20} className="group-hover:animate-bounce" />
+                                    Download APK
+                                </a>
+                            </motion.div>
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, x: 30, rotateY: 15 }}
+                            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+                            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                            viewport={{ once: true }}
+                            className="flex-1 flex justify-center items-center"
+                        >
+                            {/* Modern Phone Mockup */}
+                            <div className="relative w-72 md:w-80 aspect-[9/19] border-[6px] border-slate-700 rounded-[2.5rem] bg-slate-900 shadow-2xl overflow-hidden ring-4 ring-slate-800/50 hover:ring-indigo-500/30 transition-all duration-500">
+                                {/* Dynamic Island / Notch */}
+                                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-5 bg-slate-900 rounded-full z-20 flex items-center justify-center gap-2">
+                                    <div className="w-2 h-2 bg-slate-700 rounded-full"></div>
+                                    <div className="w-8 h-2 bg-slate-700 rounded-full"></div>
+                                </div>
+
+                                {/* Screen Content */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 flex flex-col pt-12 px-4 pb-6">
+                                    {/* App Header */}
+                                    <div className="flex flex-col items-center mb-6">
+                                        <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-3 shadow-xl shadow-indigo-500/30">
+                                            <Eye size={28} className="text-white" />
+                                        </div>
+                                        <h3 className="text-white font-bold text-lg">UrbanEye</h3>
+                                        <p className="text-indigo-300 text-xs">Smarter Cities, Together.</p>
+                                    </div>
+
+                                    {/* Action Button */}
+                                    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-3.5 rounded-2xl flex items-center gap-3 shadow-xl shadow-purple-500/20 mb-4">
+                                        <div className="bg-white/20 p-2.5 rounded-xl">
+                                            <Upload size={18} className="text-white" />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="text-white text-sm font-bold">Report an Issue</p>
+                                            <p className="text-white/70 text-xs">Snap & Submit</p>
+                                        </div>
+                                        <ChevronRight size={18} className="text-white/50 ml-auto" />
+                                    </div>
+
+                                    {/* Recent Activity Label */}
+                                    <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold mb-2 px-1">Recent Activity</p>
+
+                                    {/* Status Cards */}
+                                    <div className="space-y-2.5 flex-1">
+                                        <div className="bg-slate-800/60 backdrop-blur-sm p-3 rounded-xl flex items-center gap-3 border border-slate-700/50">
+                                            <div className="bg-green-500/20 p-2 rounded-lg shrink-0">
+                                                <CheckCircle size={16} className="text-green-400" />
+                                            </div>
+                                            <div className="text-left min-w-0 flex-1">
+                                                <p className="text-white text-xs font-semibold truncate">Pothole Fixed</p>
+                                                <p className="text-slate-400 text-[10px] truncate">MG Road</p>
+                                            </div>
+                                            <span className="text-green-400 text-[9px] font-bold bg-green-500/10 px-2 py-1 rounded-full shrink-0">DONE</span>
+                                        </div>
+
+                                        <div className="bg-slate-800/60 backdrop-blur-sm p-3 rounded-xl flex items-center gap-3 border border-slate-700/50">
+                                            <div className="bg-amber-500/20 p-2 rounded-lg shrink-0">
+                                                <Zap size={16} className="text-amber-400" />
+                                            </div>
+                                            <div className="text-left min-w-0 flex-1">
+                                                <p className="text-white text-xs font-semibold truncate">Street Light</p>
+                                                <p className="text-slate-400 text-[10px] truncate">Sector 7</p>
+                                            </div>
+                                            <span className="text-amber-400 text-[9px] font-bold bg-amber-500/10 px-2 py-1 rounded-full shrink-0">ACTIVE</span>
+                                        </div>
+
+                                        <div className="bg-slate-800/60 backdrop-blur-sm p-3 rounded-xl flex items-center gap-3 border border-slate-700/50">
+                                            <div className="bg-blue-500/20 p-2 rounded-lg shrink-0">
+                                                <MapPin size={16} className="text-blue-400" />
+                                            </div>
+                                            <div className="text-left min-w-0 flex-1">
+                                                <p className="text-white text-xs font-semibold truncate">Garbage Dump</p>
+                                                <p className="text-slate-400 text-[10px] truncate">Park Lane</p>
+                                            </div>
+                                            <span className="text-blue-400 text-[9px] font-bold bg-blue-500/10 px-2 py-1 rounded-full shrink-0">NEW</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Bottom Nav Bar */}
+                                    <div className="mt-4 bg-slate-800/80 backdrop-blur rounded-2xl p-3 flex items-center justify-around">
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Activity size={18} className="text-indigo-400" />
+                                            <span className="text-[8px] text-indigo-400 font-medium">Home</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Map size={18} className="text-slate-500" />
+                                            <span className="text-[8px] text-slate-500">Map</span>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1">
+                                            <Trophy size={18} className="text-slate-500" />
+                                            <span className="text-[8px] text-slate-500">Rank</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                </div>
+            </section>
+
             {/* CTA Section */}
             <section className="py-32 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-30">
@@ -567,23 +789,99 @@ const Home = () => {
                         </div>
                     </motion.div>
                 </div>
+            </section >
+
+            {/* About Section */}
+            <section className="py-32 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+                {/* Animated Background */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-full blur-3xl" />
+                </div>
+
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            whileInView={{ scale: 1 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            viewport={{ once: true }}
+                            className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-full mb-6"
+                        >
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
+                            <span className="text-indigo-400 font-bold text-sm uppercase tracking-wider">About Us</span>
+                        </motion.div>
+                        <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-4 sm:mb-6">
+                            Team <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Absolute</span>
+                        </h2>
+                        <p className="text-lg sm:text-2xl text-slate-300">
+                            From <span className="font-bold text-white">MITS Gwalior</span>
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        viewport={{ once: true }}
+                        className="bg-gradient-to-br from-slate-700/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-slate-600/30 text-center max-w-4xl mx-auto"
+                    >
+                        <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-500/30">
+                            <Eye size={40} className="text-white" />
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-black text-white mb-4">Our Mission</h3>
+                        <p className="text-lg md:text-xl text-slate-300 leading-relaxed italic">
+                            "To innovate technology for society — <span className="text-indigo-400 font-semibold">for the society, by the society</span>."
+                        </p>
+                        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {[
+                                { title: "AI-Powered", subtitle: "Civic Solutions", color: "text-indigo-400" },
+                                { title: "Community", subtitle: "Driven Impact", color: "text-purple-400" },
+                                { title: "Smart Cities", subtitle: "Future Ready", color: "text-pink-400" }
+                            ].map((item, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
+                                    viewport={{ once: true }}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className="bg-slate-700/50 px-6 py-4 rounded-xl border border-slate-600/30 hover:border-slate-500/50 hover:bg-slate-700/70 transition-all duration-300 cursor-pointer"
+                                >
+                                    <p className={`${item.color} font-bold text-2xl`}>{item.title}</p>
+                                    <p className="text-slate-400 text-sm">{item.subtitle}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-slate-900 py-12">
+            <footer className="bg-slate-900 py-12 border-t border-slate-800">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-                                <Activity size={22} className="text-white" />
+                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                                <Eye size={22} className="text-white" />
                             </div>
                             <span className="text-xl font-black text-white">
                                 Urban<span className="text-indigo-400">Eye</span>
                             </span>
                         </div>
-                        <p className="text-slate-400 text-sm">
-                            © 2026 UrbanEye. Built for Smart Cities Hackathon.
-                        </p>
+                        <div className="text-center md:text-left">
+                            <p className="text-slate-400 text-sm">
+                                © 2026 UrbanEye by Team Absolute, MITS Gwalior
+                            </p>
+
+                        </div>
                         <div className="flex items-center gap-6">
                             <a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Privacy</a>
                             <a href="#" className="text-slate-400 hover:text-white transition-colors text-sm">Terms</a>
@@ -592,7 +890,7 @@ const Home = () => {
                     </div>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 };
 
