@@ -852,7 +852,7 @@ const GovAdminDashboard = () => {
                                     <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 mb-5 flex-wrap font-semibold">
                                         <MapPin size={18} className="text-slate-900" />
                                         <span className="text-slate-900">Jurisdiction:</span>
-                                        {['all', 'delhi', 'gwalior'].map(city => (
+                                        {['all', 'delhi', 'gwalior', 'canberra'].map(city => (
                                             <button
                                                 key={city}
                                                 className={`px-4 py-2 rounded-lg border-2 cursor-pointer font-medium text-sm transition-all ${selectedCity === city
@@ -861,7 +861,7 @@ const GovAdminDashboard = () => {
                                                     }`}
                                                 onClick={() => setSelectedCity(city)}
                                             >
-                                                {city === 'all' ? '🌍 All Zones' : city === 'delhi' ? '🏛️ Delhi NCR' : '🏰 Gwalior'}
+                                                {city === 'all' ? '🌍 All Zones' : city === 'delhi' ? '🏛️ Delhi NCR' : city === 'gwalior' ? '🏰 Gwalior' : '🦘 Canberra'}
                                             </button>
                                         ))}
                                     </div>
@@ -1021,7 +1021,7 @@ const GovAdminDashboard = () => {
                                     <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 mb-6 flex-wrap font-semibold">
                                         <MapPin size={18} className="text-slate-900" />
                                         <span className="text-slate-900">Select Zone:</span>
-                                        {['all', 'delhi', 'gwalior'].map(city => (
+                                        {['all', 'delhi', 'gwalior', 'canberra'].map(city => (
                                             <button
                                                 key={city}
                                                 className={`px-4 py-2 rounded-lg border-2 cursor-pointer font-medium text-sm transition-all ${selectedCity === city
@@ -1030,7 +1030,7 @@ const GovAdminDashboard = () => {
                                                     }`}
                                                 onClick={() => setSelectedCity(city)}
                                             >
-                                                {city === 'all' ? '🌍 All Zones' : city === 'delhi' ? '🏛️ Delhi NCR' : '🏰 Gwalior'}
+                                                {city === 'all' ? '🌍 All Zones' : city === 'delhi' ? '🏛️ Delhi NCR' : city === 'gwalior' ? '🏰 Gwalior' : '🦘 Canberra'}
                                             </button>
                                         ))}
                                         <span className="ml-auto text-sm text-slate-500">{stats.totalReports} incidents found</span>

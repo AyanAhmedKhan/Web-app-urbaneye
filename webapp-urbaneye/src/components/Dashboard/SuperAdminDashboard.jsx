@@ -310,7 +310,7 @@ const SuperAdminDashboard = () => {
                 </header>
 
                 <div className="p-8 max-w-7xl mx-auto space-y-8">
-                    {activeView === 'overview' && <OverviewView stats={stats} trendStats={trendStats} categoryStats={categoryStats} severityStats={severityStats} statusStats={statusStats} />}
+                    {activeView === 'overview' && <OverviewView stats={stats} trendStats={trendStats} categoryStats={categoryStats} severityStats={severityStats} statusStats={statusStats} selectedCity={selectedCity} setSelectedCity={setSelectedCity} />}
                     {activeView === 'analytics' && <AnalyticsView stats={stats} trendStats={trendStats} categoryStats={categoryStats} severityStats={severityStats} statusStats={statusStats} deptStats={deptStats} selectedCity={selectedCity} setSelectedCity={setSelectedCity} />}
                     {activeView === 'map' && <MapView mapPoints={mapPoints} selectedCity={selectedCity} setSelectedCity={setSelectedCity} />}
                     {activeView === 'reports' && <ReportsView reports={currentReports} searchTerm={searchTerm} setSearchTerm={setSearchTerm} statusFilter={statusFilter} setStatusFilter={setStatusFilter} paginate={paginate} currentPage={currentPage} totalReports={filteredReportsList.length} reportsPerPage={reportsPerPage} />}
@@ -335,8 +335,24 @@ const NavItem = ({ icon: Icon, label, active, collapsed, onClick }) => (
     </button>
 );
 
-const OverviewView = ({ stats, trendStats, categoryStats, severityStats, statusStats }) => (
+const OverviewView = ({ stats, trendStats, categoryStats, severityStats, statusStats, selectedCity, setSelectedCity }) => (
     <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="flex justify-end">
+            <div className="bg-white p-1 rounded-lg border border-slate-200 shadow-sm flex items-center gap-1">
+                {['all', 'delhi', 'gwalior', 'canberra'].map(city => (
+                    <button
+                        key={city}
+                        onClick={() => setSelectedCity(city)}
+                        className={`px-4 py-1.5 rounded-md text-sm font-semibold capitalize transition-all ${selectedCity === city
+                            ? 'bg-slate-900 text-white shadow-md'
+                            : 'text-slate-500 hover:bg-slate-50'
+                            }`}
+                    >
+                        {city}
+                    </button>
+                ))}
+            </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard icon={FileText} label="Total Reports" value={stats.totalReports} color="blue" />
             <StatCard icon={CheckCircle} label="Resolved" value={stats.resolvedReports} color="green" />
