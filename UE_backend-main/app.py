@@ -2705,6 +2705,7 @@ class SeedAll(Resource):
         # City bounds
         delhi_bounds = {'lat': (28.5, 28.75), 'lng': (77.1, 77.35)}
         gwalior_bounds = {'lat': (26.15, 26.3), 'lng': (78.1, 78.25)}
+        canberra_bounds = {'lat': (-35.4735, -35.1500), 'lng': (149.0000, 149.2000)}
         
         created_counts = {'users': 0, 'field_officers': 0, 'dept_heads': 0, 'reports': 0, 'bookings': 0, 'ngo_requests': 0}
         
@@ -2824,7 +2825,7 @@ class SeedAll(Resource):
             category = random.choice(categories)
             department = DEPT_MAPPING.get(category, 'General')
             status = random.choice(statuses)
-            bounds = random.choice([delhi_bounds, gwalior_bounds])
+            bounds = random.choice([delhi_bounds, gwalior_bounds, canberra_bounds])
             
             # Assign to field officer if status is assigned/in_progress
             assigned_to = None

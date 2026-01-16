@@ -296,6 +296,11 @@ const GovAdminDashboard = () => {
             speak('Filtering to Gwalior');
             setVoiceFeedback('✓ Showing Gwalior data');
         }
+        else if (cmd.includes('canberra')) {
+            setSelectedCity('canberra');
+            speak('Filtering to Canberra');
+            setVoiceFeedback('✓ Showing Canberra data');
+        }
         else if (cmd.includes('all cities') || cmd.includes('show all')) {
             setSelectedCity('all');
             speak('Showing all cities');
@@ -343,7 +348,8 @@ const GovAdminDashboard = () => {
 
     const cityBounds = {
         delhi: { lat: [28.4, 28.9], lng: [76.8, 77.4] },
-        gwalior: { lat: [26.1, 26.35], lng: [78.05, 78.3] }
+        gwalior: { lat: [26.1, 26.35], lng: [78.05, 78.3] },
+        canberra: { lat: [-35.5, -35.1], lng: [149.0, 149.25] }
     };
     const [predictionMeta, setPredictionMeta] = useState(null);
 
@@ -1729,7 +1735,7 @@ const GovAdminDashboard = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3 flex-wrap">
-                                            {['all', 'delhi', 'gwalior'].map(city => (
+                                            {['all', 'delhi', 'gwalior', 'canberra'].map(city => (
                                                 <button
                                                     key={city}
                                                     className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${selectedCity === city
@@ -1738,7 +1744,7 @@ const GovAdminDashboard = () => {
                                                         }`}
                                                     onClick={() => setSelectedCity(city)}
                                                 >
-                                                    {city === 'all' ? '🌍 All' : city === 'delhi' ? '🏛️ Delhi' : '🏰 Gwalior'}
+                                                    {city === 'all' ? '🌍 All' : city === 'delhi' ? '🏛️ Delhi' : city === 'canberra' ? '🦘 Canberra' : '🏰 Gwalior'}
                                                 </button>
                                             ))}
                                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-400 font-semibold text-sm">
@@ -1756,7 +1762,7 @@ const GovAdminDashboard = () => {
                                             </div>
                                         </div>
                                         <MapContainer
-                                            center={customMapCenter || (selectedCity === 'gwalior' ? [26.2183, 78.1828] : [28.6139, 77.2090])}
+                                            center={customMapCenter || (selectedCity === 'gwalior' ? [26.2183, 78.1828] : selectedCity === 'canberra' ? [-35.28, 149.13] : [28.6139, 77.2090])}
                                             zoom={customMapCenter ? 14 : 11}
                                             scrollWheelZoom={true}
                                             style={{ height: '550px', width: '100%' }}
@@ -1988,7 +1994,7 @@ const GovAdminDashboard = () => {
                                                 {/* Map */}
                                                 <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800 relative group h-[500px]">
                                                     <MapContainer
-                                                        center={customMapCenter || (selectedCity === 'gwalior' ? [26.2183, 78.1828] : [28.6139, 77.2090])}
+                                                        center={customMapCenter || (selectedCity === 'gwalior' ? [26.2183, 78.1828] : selectedCity === 'canberra' ? [-35.28, 149.13] : [28.6139, 77.2090])}
                                                         zoom={customMapCenter ? 14 : 12}
                                                         scrollWheelZoom={true}
                                                         style={{ height: '100%', width: '100%' }}
