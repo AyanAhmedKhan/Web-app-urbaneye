@@ -169,6 +169,48 @@ const Analyze = () => {
         }
     };
 
+
+    const imageContainerRef = useRef(null);
+
+    const renderBoundingBoxes = () => {
+        if (!result?.issues || !preview || !imageContainerRef.current) return null;
+
+        return result.issues.map((issue, index) => {
+            // Robust validation for box_2d
+            if (!issue.box_2d || !Array.isArray(issue.box_2d) || issue.box_2d.length < 4) return null;
+
+            const [ymin, xmin, ymax, xmax] = issue.box_2d;
+
+            // Convert 0-1000 scale to percentages
+            const top = (ymin / 1000) * 100;
+            const left = (xmin / 1000) * 100;
+            const height = ((ymax - ymin) / 1000) * 100;
+            const width = ((xmax - xmin) / 1000) * 100;
+
+            const colorClass = getSeverityColor(issue.severity);
+            const borderColor = issue.severity?.toLowerCase() === 'high' ? 'border-red-500' :
+                issue.severity?.toLowerCase() === 'medium' ? 'border-amber-500' : 'border-green-500';
+
+            return (
+                <div
+                    key={index}
+                    className={`absolute border-2 ${borderColor} shadow-[0_0_10px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out`}
+                    style={{
+                        top: `${top}%`,
+                        left: `${left}%`,
+                        width: `${width}%`,
+                        height: `${height}%`,
+                        // Use box-shadow to make it visible on any background
+                    }}
+                >
+                    <div className={`absolute -top-7 left-0 px-2 py-0.5 text-xs font-bold text-white rounded shadow-sm whitespace-nowrap ${colorClass}`}>
+                        {issue.category?.replace('_', ' ')}
+                    </div>
+                </div>
+            );
+        });
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
             {/* Service Selection Modal */}
@@ -183,7 +225,7 @@ const Analyze = () => {
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-bold">Speed Up Resolution?</h2>
-                                        <p className="text-white/70 text-sm">Issue reported successfully!</p>
+                                        <p className="text-white/70 text-sm">{result?.issues?.length || 0} issue(s) detected & localized!</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setShowServiceModal(false)} className="p-2 hover:bg-white/10 rounded-xl transition">
@@ -232,13 +274,13 @@ const Analyze = () => {
                 {/* Hero Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
-                        <Sparkles size={16} /> Powered by Gemini AI
+                        <Sparkles size={16} /> Powered by Gemini 2.5 Flash
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
                         AI Civic Issue Detection
                     </h1>
                     <p className="text-slate-500 text-lg max-w-xl mx-auto">
-                        Upload a photo of any infrastructure issue and our AI will instantly analyze and categorize it.
+                        Real-time spatial analysis of civic infrastructure using advanced Multimodal AI.
                     </p>
                 </div>
 
@@ -247,16 +289,17 @@ const Analyze = () => {
                     {/* Upload Section */}
                     <div className="space-y-6">
                         <div
+                            ref={imageContainerRef}
                             className={`
                                 relative rounded-3xl border-2 border-dashed transition-all cursor-pointer overflow-hidden
                                 ${dragActive ? 'border-indigo-500 bg-indigo-50 scale-[1.02]' : 'border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50'}
                                 ${preview ? 'border-solid border-indigo-500' : ''}
                             `}
-                            style={{ minHeight: '360px' }}
+                            style={{ minHeight: preview ? 'auto' : '360px' }} // Dynamic height for preview
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
-                            onClick={() => fileInputRef.current.click()}
+                            onClick={() => !result && fileInputRef.current.click()} // Only click if no result (user can click 'change image' button instead)
                         >
                             <input
                                 type="file"
@@ -267,13 +310,27 @@ const Analyze = () => {
                             />
 
                             {preview ? (
-                                <div className="relative h-full">
-                                    <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-3xl" style={{ minHeight: '360px' }} />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-3xl" />
-                                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                                        <span className="text-white/80 text-sm font-medium">Click to change image</span>
+                                <div className="relative w-full">
+                                    <img src={preview} alt="Preview" className="w-full h-auto object-contain rounded-3xl" />
+
+                                    {/* Bounding Box Overlay */}
+                                    {result && (
+                                        <div className="absolute inset-0 z-10 pointer-events-none">
+                                            {renderBoundingBoxes()}
+                                        </div>
+                                    )}
+
+                                    {!result && <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-3xl pointer-events-none" />}
+
+                                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-20">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); fileInputRef.current.click(); }}
+                                            className="text-white/80 text-sm font-medium hover:text-white bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm transition-colors"
+                                        >
+                                            Click to change image
+                                        </button>
                                         <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-bold">
-                                            Ready to analyze
+                                            {result ? 'Analysis Complete' : 'Ready to analyze'}
                                         </span>
                                     </div>
                                 </div>
@@ -308,10 +365,10 @@ const Analyze = () => {
                         {/* Analyze Button */}
                         <button
                             onClick={analyzeImage}
-                            disabled={!file || loading}
+                            disabled={!file || loading || result}
                             className={`
                                 w-full py-4 px-6 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all
-                                ${file && !loading
+                                ${file && !loading && !result
                                     ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-xl hover:shadow-indigo-200 hover:-translate-y-0.5'
                                     : 'bg-slate-100 text-slate-400 cursor-not-allowed'}
                             `}
@@ -319,7 +376,12 @@ const Analyze = () => {
                             {loading ? (
                                 <>
                                     <Loader size={22} className="animate-spin" />
-                                    Analyzing with AI...
+                                    Analyzing with Gemini 2.5...
+                                </>
+                            ) : result ? (
+                                <>
+                                    <CheckCircle size={22} />
+                                    Analysis Complete
                                 </>
                             ) : (
                                 <>
@@ -340,7 +402,7 @@ const Analyze = () => {
                     {/* Results Section */}
                     <div>
                         {result ? (
-                            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+                            <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden h-full">
                                 {result.issues_detected ? (
                                     <>
                                         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-6">
@@ -350,13 +412,13 @@ const Analyze = () => {
                                                 </div>
                                                 <div>
                                                     <h2 className="text-2xl font-bold text-white">Issues Detected</h2>
-                                                    <p className="text-white/70">{result.issues?.length || 0} issue(s) found</p>
+                                                    <p className="text-white/70">{result.issues?.length || 0} issue(s) identified & localized</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="p-6 space-y-4">
+                                        <div className="p-6 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
                                             {result.issues?.map((issue, index) => (
-                                                <div key={index} className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                                                <div key={index} className="bg-slate-50 rounded-2xl p-5 border border-slate-100 hover:border-indigo-200 transition-colors">
                                                     <div className="flex items-start justify-between mb-3">
                                                         <span className={`text-xs font-bold text-white px-3 py-1 rounded-full uppercase ${getSeverityColor(issue.severity)}`}>
                                                             {issue.severity} Severity
@@ -364,13 +426,27 @@ const Analyze = () => {
                                                         <span className="text-xs text-slate-400 font-medium">{issue.department || 'General'}</span>
                                                     </div>
                                                     <h4 className="text-lg font-bold text-slate-800 capitalize mb-2">{issue.category?.replace('_', ' ')}</h4>
-                                                    <p className="text-slate-500 text-sm leading-relaxed">{issue.description}</p>
+                                                    <p className="text-slate-500 text-sm leading-relaxed mb-2">{issue.description}</p>
+                                                    {issue.box_2d && (
+                                                        <div className="text-xs text-indigo-500 font-medium flex items-center gap-1">
+                                                            <MapPin size={12} /> Spatial Coordinates: [{issue.box_2d.join(', ')}]
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
+
+                                            <div className="pt-4 border-t border-slate-100 mt-4">
+                                                <button
+                                                    onClick={() => setShowServiceModal(true)}
+                                                    className="w-full py-3 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-100 transition-colors"
+                                                >
+                                                    View Service Options
+                                                </button>
+                                            </div>
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="p-12 text-center">
+                                    <div className="p-12 text-center h-full flex flex-col items-center justify-center">
                                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                             <CheckCircle size={40} className="text-green-500" />
                                         </div>

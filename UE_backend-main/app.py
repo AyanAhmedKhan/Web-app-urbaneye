@@ -385,10 +385,16 @@ def process_image_with_gemini(image_data):
                 {
                     "category": "one of: pothole, garbage, sewage, infrastructure, drainage, streetlight, sidewalk, traffic_signal, illegal_dumping, waterlogging",
                     "description": "Clear, detailed description of what you see (2-3 sentences)",
-                    "severity": "low, medium, or high"
+                    "severity": "low, medium, or high",
+                    "box_2d": [ymin, xmin, ymax, xmax] 
                 }
             ]
         }
+
+        "box_2d" requirements:
+        - A list of 4 integers/floats representing [ymin, xmin, ymax, xmax] relative to the image size (0-1000 scale). 
+        - Example: [150, 200, 350, 600].
+        - If the object is not localized, return null.
 
         If NO civic issues are detected, respond with:
         {
