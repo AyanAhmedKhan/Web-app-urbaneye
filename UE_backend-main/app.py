@@ -319,7 +319,8 @@ issue_detail = api.model('IssueDetail', {
     'description': fields.String(required=True, description='Detailed description of the issue', 
                                 example='Large pothole visible on the road surface causing traffic disruption'),
     'severity': fields.String(required=True, description='Issue severity level', 
-                             example='high', enum=['low', 'medium', 'high'])
+                             example='high', enum=['low', 'medium', 'high']),
+    'box_2d': fields.List(fields.Float, required=False, description='Bounding box coordinates [ymin, xmin, ymax, xmax] (0-1000 scale)', example=[150, 200, 350, 600])
 })
 
 detection_response = api.model('DetectionResponse', {
