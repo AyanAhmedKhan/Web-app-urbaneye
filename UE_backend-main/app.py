@@ -2521,7 +2521,7 @@ class GeneratePRImage(Resource):
             return {
                 'success': True,
                 'message': f"AI generation unavailable, using placeholder: {str(e)}",
-                'image_url': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80' # Generic City
+                'image_url': 'https://lh3.googleusercontent.com/gg-dl/ABS2GSkOYYXPW0aVkjonhoSv7urVhPnQjBAl4-hqYmgcLqoIBGEXXLal_5sJo2KYnUmv2yZdxkePBtt6VkugTscUdD3TyiWrURwcBTla_AlVOqkDokJLeXF8ph_dJQEU0zQ_tUfaJ-snt8pJqUrabmsyN7W1hpKMuqN4NtMi0vaIkpA0EvBJ=s1024-rj' # Generic City
             }, 200
 
 
