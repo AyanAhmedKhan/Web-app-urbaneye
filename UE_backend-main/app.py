@@ -2519,8 +2519,8 @@ class GeneratePRImage(Resource):
             
             # Return a generic smart city placeholder text/gradient for now if AI fails
             return {
-                'success': False,
-                'message': str(e),
+                'success': True,
+                'message': f"AI generation unavailable, using placeholder: {str(e)}",
                 'image_url': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80' # Generic City
             }, 200
 

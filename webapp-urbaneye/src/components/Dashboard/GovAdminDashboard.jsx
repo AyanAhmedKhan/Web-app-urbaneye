@@ -1785,8 +1785,14 @@ const GovAdminDashboard = () => {
                                                             </a>
                                                         </div>
                                                     ) : (
-                                                        <div className="h-24 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-400 text-xs">
-                                                            Click generate to create visual content
+                                                        <div className="h-32 border-2 border-dashed border-slate-300 rounded-md flex flex-col items-center justify-center gap-3 text-slate-500 text-xs bg-slate-50/50">
+                                                            <span>Create a visual campaign for this update</span>
+                                                            <button
+                                                                onClick={generatePRImage}
+                                                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-all shadow-sm active:scale-95"
+                                                            >
+                                                                <Sparkles size={14} /> Generate PR Image
+                                                            </button>
                                                         </div>
                                                     )}
                                                 </div>
