@@ -510,9 +510,23 @@ const GovAdminDashboard = () => {
             const dayReports = filteredReports.filter(r => {
                 if (!r.created_at) return false;
 
-                // Handle both ISO format and other date formats
-                const reportDate = r.created_at.split('T')[0];
-                return reportDate === date;
+                try {
+                    // Handle various date formats: ISO string, Unix timestamp, etc.
+                    let reportDate;
+                    if (typeof r.created_at === 'number') {
+                        // Unix timestamp (seconds or milliseconds)
+                        const ts = r.created_at > 9999999999 ? r.created_at : r.created_at * 1000;
+                        reportDate = new Date(ts).toISOString().split('T')[0];
+                    } else if (typeof r.created_at === 'string') {
+                        // ISO string or other date string
+                        reportDate = new Date(r.created_at).toISOString().split('T')[0];
+                    } else {
+                        return false;
+                    }
+                    return reportDate === date;
+                } catch (e) {
+                    return false;
+                }
             });
 
             return {
