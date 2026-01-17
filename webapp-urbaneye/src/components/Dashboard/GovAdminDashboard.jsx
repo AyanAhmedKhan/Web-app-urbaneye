@@ -428,10 +428,15 @@ const GovAdminDashboard = () => {
             const reportsRes = await axios.get(`${API_BASE}/reports`, {
                 headers
             });
-            const allReports = reportsRes.data.reports || [];
-            setReports(allReports);
-            calculateAnalytics(allReports);
 
+            // Transform reports: convert backend 'timestamp' to 'created_at' 
+            const allReports = (reportsRes.data.reports || []).map(r => ({
+                ...r,
+                created_at: r.timestamp ? new Date(r.timestamp * 1000).toISOString() : null,
+                id: r.id || `temp-${Math.random()}`
+            }));
+
+            setReports(allReports);
             calculateAnalytics(allReports);
 
             // Fetch Team Data
