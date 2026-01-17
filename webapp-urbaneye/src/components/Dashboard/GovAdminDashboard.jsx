@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import {
     LayoutDashboard, Users, AlertTriangle, FileText, Settings, LogOut,
     Menu, X, Bell, Search, MapPin, Filter, Database, RefreshCw,
-    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff
+    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff, Image, Loader2
 } from 'lucide-react';
 import {
     PieChart, Pie, Cell,
@@ -62,6 +62,8 @@ const GovAdminDashboard = () => {
     const [streetViewLocation, setStreetViewLocation] = useState(null);
     const [prModalOpen, setPrModalOpen] = useState(false);
     const [generatedPR, setGeneratedPR] = useState('');
+    const [prImage, setPrImage] = useState(null);
+    const [prImageLoading, setPrImageLoading] = useState(false);
     const [showPredictions, setShowPredictions] = useState(false);
     const [predictions, setPredictions] = useState([]);
 
@@ -695,7 +697,32 @@ const GovAdminDashboard = () => {
 
         const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
         setGeneratedPR(randomTemplate);
+        setPrImage(null); // Reset image
         setPrModalOpen(true);
+    };
+
+    const generatePRImage = async () => {
+        setPrImageLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+            const response = await axios.post(`${API_BASE}/gov/generate-pr-image`, {
+                pr_text: generatedPR,
+                stats: stats
+            }, { headers });
+
+            if (response.data.success) {
+                setPrImage(response.data.image_url);
+            } else {
+                alert("Failed to generate image: " + response.data.message);
+            }
+        } catch (error) {
+            console.error("Error generating image:", error);
+            alert("Failed to connect to image generation service.");
+        } finally {
+            setPrImageLoading(false);
+        }
     };
 
     const handleLogout = () => { logout(); navigate('/login'); };
@@ -1720,15 +1747,57 @@ const GovAdminDashboard = () => {
                                             </div>
                                             <div className="p-4">
                                                 <p className="text-sm text-gray-500 mb-2">Here is your auto-generated positive press release based on this week's data:</p>
-                                                <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 font-mono text-sm whitespace-pre-wrap text-gray-800">
+                                                <div className="bg-gray-100 p-4 rounded-lg border border-gray-200 font-mono text-sm whitespace-pre-wrap text-gray-800 mb-4">
                                                     {generatedPR}
                                                 </div>
+
+                                                {/* AI Image Generation Section */}
+                                                <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                                            <Image size={16} className="text-blue-600" /> AI Campaign Graphic
+                                                        </h4>
+                                                        {!prImage && !prImageLoading && (
+                                                            <button
+                                                                onClick={generatePRImage}
+                                                                className="text-xs flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200 transition-colors font-medium cursor-pointer"
+                                                            >
+                                                                <Sparkles size={12} /> Generate Image
+                                                            </button>
+                                                        )}
+                                                    </div>
+
+                                                    {prImageLoading ? (
+                                                        <div className="h-48 bg-slate-100 rounded-md flex flex-col items-center justify-center text-slate-400">
+                                                            <Loader2 size={32} className="animate-spin mb-2 text-blue-500" />
+                                                            <span className="text-xs">Generating graphical assets...</span>
+                                                        </div>
+                                                    ) : prImage ? (
+                                                        <div className="relative group">
+                                                            <img src={prImage} alt="AI Generated Campaign" className="w-full h-48 object-cover rounded-md shadow-sm border border-slate-200" />
+                                                            <a
+                                                                href={prImage}
+                                                                download="urbaneye_campaign.png"
+                                                                className="absolute bottom-2 right-2 bg-black/70 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/90"
+                                                                title="Download Image"
+                                                            >
+                                                                <Download size={16} />
+                                                            </a>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="h-24 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-400 text-xs">
+                                                            Click generate to create visual content
+                                                        </div>
+                                                    )}
+                                                </div>
+
                                                 <div className="mt-4 flex justify-end gap-2">
                                                     <button className="btn-outline" onClick={() => {
                                                         navigator.clipboard.writeText(generatedPR);
                                                         setPrModalOpen(false);
                                                         alert("Copied to clipboard!");
                                                     }}>Copy Text</button>
+
                                                     <button className="action-btn primary" onClick={() => {
                                                         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(generatedPR)}`, '_blank');
                                                     }}>Tweet This</button>

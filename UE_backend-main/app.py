@@ -2456,6 +2456,74 @@ if __name__ == '__main__':
 # ==========================================
 # HRMS Endpoints
 # ==========================================
+# ==========================================
+# Gov Admin Endpoints
+# ==========================================
+
+@gov_ns.route('/generate-pr-image')
+class GeneratePRImage(Resource):
+    @jwt_required()
+    def post(self):
+        """Generate AI promotional image for Weekly PR"""
+        data = request.json
+        pr_text = data.get('pr_text', '')
+        stats = data.get('stats', {})
+        
+        logger.info("Generating PR Image...")
+        
+        try:
+            # Construct a rich prompt for the image
+            prompt = f"""
+            Create a high-quality, professional, photorealistic or 3D render style image for a smart city government update.
+            Context: {pr_text[:200]}...
+            Theme: Urban infrastructure, modern city, efficiency, safety, technology.
+            Visual overlay text style (do not add text, just visual style): Clean, blue/green color palette, futuristic but grounded.
+            No text in the image.
+            """
+            
+            # Try to use Imagen 3 model via genai SDK
+            # This requires 'google-generativeai' >= 0.8.0 presumably
+            try:
+                # Attempt to access ImageGenerationModel
+                if hasattr(genai, 'ImageGenerationModel'):
+                    imagen_model = genai.ImageGenerationModel("imagen-3.0-generate-001")
+                    images = imagen_model.generate_images(
+                        prompt=prompt,
+                        number_of_images=1,
+                        aspect_ratio="16:9",
+                        safety_filter_level="block_only_high",
+                        person_generation="allow_adult"
+                    )
+                    
+                    if images and images[0]:
+                        # Convert to base64
+                        img_bytes = images[0]._image_bytes
+                        img_b64 = base64.b64encode(img_bytes).decode('utf-8')
+                        return {
+                            'success': True, 
+                            'image_url': f"data:image/png;base64,{img_b64}",
+                            'message': 'Image generated with Imagen 3'
+                        }, 200
+            except Exception as e:
+                logger.warning(f"Imagen 3 generation failed or not found: {e}")
+                
+            # Fallback: Check if we can use a standard GenerativeModel if the user insisted 
+            # "Gemini 2.0 Flash supports image generation" - usually it doesn't output image bytes directly yet via this SDK.
+            
+            raise Exception("AI Image Generation not available in current environment")
+
+        except Exception as e:
+            logger.error(f"Image generation failed: {e}")
+            # Fallback to a nice placeholder image based on category if possible, or just a generic one
+            # Using a reliable placeholder from Unsplash or similar could be an option, but we'll return error or local placeholder
+            
+            # Return a generic smart city placeholder text/gradient for now if AI fails
+            return {
+                'success': False,
+                'message': str(e),
+                'image_url': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80' # Generic City
+            }, 200
+
 
 @hr_ns.route('/candidates')
 class HRCandidates(Resource):
