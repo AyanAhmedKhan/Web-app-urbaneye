@@ -2470,6 +2470,7 @@ class GeneratePRImage(Resource):
         stats = data.get('stats', {})
         
         logger.info("Generating PR Image...")
+        time.sleep(3) # Simulate loading for 3 seconds as requested
         
         try:
             # Construct a rich prompt for the image
@@ -2521,7 +2522,7 @@ class GeneratePRImage(Resource):
             return {
                 'success': True,
                 'message': f"AI generation unavailable, using placeholder: {str(e)}",
-                'image_url': 'https://lh3.googleusercontent.com/gg-dl/ABS2GSkOYYXPW0aVkjonhoSv7urVhPnQjBAl4-hqYmgcLqoIBGEXXLal_5sJo2KYnUmv2yZdxkePBtt6VkugTscUdD3TyiWrURwcBTla_AlVOqkDokJLeXF8ph_dJQEU0zQ_tUfaJ-snt8pJqUrabmsyN7W1hpKMuqN4NtMi0vaIkpA0EvBJ=s1024-rj' # Generic City
+                'image_url': '/unnamed.jpg' # Generic City
             }, 200
 
 
