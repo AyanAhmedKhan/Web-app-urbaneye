@@ -274,7 +274,7 @@ const Analyze = () => {
                 {/* Hero Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
-                        <Sparkles size={16} /> Powered by Gemini 2.5 Flash
+                        <Sparkles size={16} /> Powered by UrbanAI Engine
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3">
                         AI Civic Issue Detection
@@ -376,7 +376,7 @@ const Analyze = () => {
                             {loading ? (
                                 <>
                                     <Loader size={22} className="animate-spin" />
-                                    Analyzing with Gemini 2.5...
+                                    Analyzing with UrbanAI Engine...
                                 </>
                             ) : result ? (
                                 <>

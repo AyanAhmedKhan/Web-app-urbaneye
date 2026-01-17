@@ -1811,7 +1811,7 @@ const GovAdminDashboard = () => {
                                                 >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px' }}>
-                                                            <div className="font-bold text-purple-800 mb-2">🤖 Gemini AI Prediction</div>
+                                                            <div className="font-bold text-purple-800 mb-2">🤖 UrbanAI Prediction</div>
                                                             <div className="text-sm text-slate-700 space-y-1">
                                                                 <div><span className="font-medium">Type:</span> {pred.type}</div>
                                                                 <div><span className="font-medium">Probability:</span> {pred.risk}</div>
@@ -1839,7 +1839,7 @@ const GovAdminDashboard = () => {
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-white text-xl tracking-tight">🤖 AI Predictive Command Center</h3>
-                                                <p className="text-sm text-purple-200/80">Powered by Gemini 2.5 Flash • Correlating Live Weather, News & Historical Data</p>
+                                                <p className="text-sm text-purple-200/80">Powered by UrbanAI Engine • Correlating Live Weather, News & Historical Data</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3 relative z-10">
@@ -1871,7 +1871,7 @@ const GovAdminDashboard = () => {
                                             </div>
                                             <h2 className="text-2xl font-bold text-slate-800 mb-2">Ready to Predict Future Risks?</h2>
                                             <p className="text-slate-500 max-w-md mb-8">
-                                                Click "Start New Analysis" above to let Gemini AI scan live weather data from Open-Meteo, local news report, and historical incident patterns to forecast infrastructure failures.
+                                                Click "Start New Analysis" above to let UrbanAI Engine scan live weather data from Open-Meteo, local news report, and historical incident patterns to forecast infrastructure failures.
                                             </p>
                                             <div className="flex gap-4 text-sm text-slate-400">
                                                 <span className="flex items-center gap-1"><CloudRain size={14} /> Live Weather</span>

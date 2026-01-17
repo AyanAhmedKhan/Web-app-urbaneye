@@ -574,7 +574,8 @@ class SeedReports(Resource):
         # City bounds
         city_bounds = {
             'delhi': {'lat': (28.5, 28.75), 'lng': (77.1, 77.3)},
-            'gwalior': {'lat': (26.15, 26.3), 'lng': (78.1, 78.25)}
+            'gwalior': {'lat': (26.15, 26.3), 'lng': (78.1, 78.25)},
+            'canberra': {'lat': (-35.4, -35.2), 'lng': (149.0, 149.2)}
         }
         
         bounds = city_bounds.get(city, city_bounds['delhi'])
