@@ -68,6 +68,11 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [activeView, setActiveView] = useState('overview');
 
+    useEffect(() => {
+        console.log("Dashboard Loaded. Current User:", user);
+        console.log("User Role:", user?.role);
+    }, [user]);
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -443,107 +448,14 @@ const Dashboard = () => {
     }
 
     // Civilian Dashboard Layout
-    if (user?.role === 'civilian') {
+    if (user?.role?.toLowerCase() === 'civilian') {
         return <CivilianDashboard user={user} />;
     }
 
-    // Government/Admin Dashboard
-    const getRoleBadge = () => {
-        switch (user?.role) {
-            case 'gov_admin': return { label: 'Government Admin', color: '#ef4444', icon: <Building size={16} /> };
-            case 'dept_head': return { label: `Head of ${user?.department || 'Department'}`, color: '#f59e0b', icon: <Users size={16} /> };
-            case 'field_officer': return { label: 'Field Officer', color: '#10b981', icon: <ClipboardList size={16} /> };
-            default: return { label: 'Community Member', color: '#3b82f6', icon: <Activity size={16} /> };
-        }
-    };
-
-    const roleInfo = getRoleBadge();
-
-    return (
-        <div className="dashboard-page">
-            <div className="dashboard-header container">
-                <div className="role-indicator" style={{ borderColor: roleInfo.color, color: roleInfo.color }}>
-                    {roleInfo.icon} {roleInfo.label}
-                </div>
-                <h1>
-                    {user?.role === 'gov_admin' ? 'City-Wide Command Center' :
-                        user?.role === 'dept_head' ? `${user?.department} Department Overview` :
-                            'Infrastructure Heatmap'}
-                </h1>
-                <p>Real-time visualization of reported civic issues.</p>
-            </div>
-
-            <div className="map-container-wrapper">
-                <MapContainer
-                    center={[28.6139, 77.2090]}
-                    zoom={11}
-                    scrollWheelZoom={true}
-                    className="leaflet-map"
-                >
-                    <TileLayer
-                        attribution='&copy; OpenStreetMap'
-                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    />
-                    {MOCK_POINTS.map((point, idx) => (
-                        <CircleMarker
-                            key={idx}
-                            center={[point.lat, point.lng]}
-                            pathOptions={{
-                                color: point.intensity > 0.8 ? '#ef4444' : '#f59e0b',
-                                fillColor: point.intensity > 0.8 ? '#ef4444' : '#f59e0b',
-                                fillOpacity: 0.6
-                            }}
-                            radius={10 * point.intensity + 5}
-                        >
-                            <Popup>
-                                <strong>Issue Cluster</strong><br />
-                                {point.count} reported issues<br />
-                                Dept: {point.dept}
-                            </Popup>
-                        </CircleMarker>
-                    ))}
-                </MapContainer>
-
-                <div className="dashboard-overlay glass-panel">
-                    <h3>{user?.role === 'field_officer' ? 'My Assignments' : 'Stats Overview'}</h3>
-                    {user?.role === 'field_officer' ? (
-                        <div className="mini-task-list">
-                            <p style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '1rem' }}>
-                                Use the Task Board below for full details.
-                            </p>
-                            <div className="stat-row">
-                                <span>Pending Tasks</span>
-                                <strong>3</strong>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="stat-row">
-                                <span>Total Reports</span>
-                                <strong>1,240</strong>
-                            </div>
-                            <div className="stat-row">
-                                <span>Resolved</span>
-                                <strong>850</strong>
-                            </div>
-                            {user?.role === 'gov_admin' && (
-                                <div className="stat-row">
-                                    <span>Departments</span>
-                                    <strong>5 Active</strong>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-
-                {(user?.role === 'field_officer' || user?.role === 'dept_head') && (
-                    <div className="container" style={{ marginTop: '2rem', paddingBottom: '2rem' }}>
-                        <TaskList />
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+    // Fallback: If no other role matched (and not redirected), default to Civilian Dashboard
+    // This handles 'civilian' role and any potential edge cases where role might be missing or 'user'
+    console.log("Dashboard: Defaulting to Civilian Dashboard for role:", user?.role);
+    return <CivilianDashboard user={user} />;
 };
 
 export default Dashboard;

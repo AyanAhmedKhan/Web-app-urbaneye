@@ -89,7 +89,7 @@ const Home = () => {
         {
             icon: Upload,
             title: "AI-Powered Detection",
-            description: "Upload any image and our Gemini-powered AI instantly identifies civic issues like potholes, garbage, and broken streetlights.",
+            description: "Upload any image and our UrbanAI Engine instantly identifies civic issues like potholes, garbage, and broken streetlights.",
             color: "from-blue-500 to-indigo-600"
         },
         {
