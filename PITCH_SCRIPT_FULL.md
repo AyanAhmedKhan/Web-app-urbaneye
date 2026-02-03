@@ -36,7 +36,7 @@ Let's walk through how each role experiences UrbanEye."
 ### Dashboard Home
 **[Visual: Animated civilian dashboard with floating particles]**
 
-"When a civilian logs in, they see a beautiful, animated dashboard with:
+"When a civilian logs in, they see a beautifuls, animated dashboard with:
 - **Quick Stats**: How many issues they've reported, how many resolved
 - **City Pulse**: Live activity feed showing recent reports nearby
 - **Action Buttons**: Report Issue, View Map, Check Leaderboard"
