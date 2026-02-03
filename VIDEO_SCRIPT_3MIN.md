@@ -180,26 +180,185 @@ All three components communicate through secure API endpoints, with PostgreSQL s
 - **NGORequest**: Large-scale community help requests
 - **EmployeeProfile**: Designation, salary, bank details
 - **Attendance**: Daily check-in/check-out tracking
-- **Payroll**: Monthly salary calculations with deductions
+- **Payroll**: Monthly salary calculations with deductions"
 
-### AI PIPELINE
-**[Visual: Flowchart of image → Gemini → category → department]**
+---
 
-1. Image uploaded via API
-2. Sent to Gemini with specialized civic detection prompt
-3. Returns: category, description, severity, bounding box
-4. Backend auto-assigns department (Roads/Water/Waste/Electrical)
-5. Creates report with initial log entry
-6. Pushes to dashboard in real-time
+# PART 5B: AI DEEP-DIVE - THE BRAIN OF URBANEYE (3:30 - 5:00)
 
-### PREDICTIVE INTELLIGENCE
-**[Visual: Weather + history → predictions]**
+**[Visual: AI brain graphic connecting to multiple data sources]**
 
-- Fetches Open-Meteo weather data (rainfall, temperature)
-- Uses DuckDuckGo search for local infrastructure news
-- LangChain chains historical patterns with live data
-- Generates predictions: location, risk %, estimated repair cost
-- Admins can one-click convert predictions to tickets"
+**Narrator:**
+"Now let's explore the AI – the true intelligence behind UrbanEye. We use **five distinct AI capabilities**:"
+
+---
+
+## AI FEATURE 1: IMAGE ANALYSIS (Gemini Vision)
+
+**[Visual: Photo upload → Gemini processing → JSON output]**
+
+**Narrator:**
+"When a citizen snaps a photo, it goes straight to **Google Gemini 2.5 Flash** – a multi-modal AI that can see and understand images.
+
+**How it works:**
+1. Image is converted to bytes and sent with a specialized prompt
+2. Gemini analyzes for 10 specific civic issue types:
+   - Potholes, garbage, sewage, drainage
+   - Streetlights, sidewalks, traffic signals
+   - Illegal dumping, waterlogging, infrastructure damage
+3. Returns structured JSON with:
+   - **Category**: What type of issue (e.g., 'pothole')
+   - **Description**: Detailed 2-3 sentence analysis
+   - **Severity**: Low, medium, or high
+   - **Bounding Box**: Pixel coordinates of the issue location
+
+**The backend then:**
+- Auto-assigns department (Roads, Water, Waste, Electrical)
+- Creates report with geo-coordinates
+- Adds initial audit log
+- Returns saved report ID to the app"
+
+---
+
+## AI FEATURE 2: PREDICTIVE INTELLIGENCE (LangChain Pipeline)
+
+**[Visual: Three data sources merging → LangChain → Predictions map]**
+
+**Narrator:**
+"UrbanEye doesn't just react – it **predicts future failures**. This is powered by a sophisticated LangChain pipeline.
+
+**Three Data Sources Feed the AI:**
+
+**Source 1 – Live Weather (Open-Meteo API):**
+- Fetches real-time temperature, rainfall, humidity
+- Heavy rain? Expect drainage issues
+- Heatwave? Watch for road surface cracks
+
+**Source 2 – Local News (DuckDuckGo Search):**
+- Searches 'Delhi infrastructure news' in real-time
+- Filters for relevant topics: roads, water, construction
+- Excludes noise: politics, cricket, exams
+- Example: 'Water pipeline burst in Sector 4' → Predict supply disruption nearby
+
+**Source 3 – Historical Reports (Our Database):**
+- Queries last 40 reports with coordinates
+- Identifies clustering patterns
+- High-severity pothole cluster? Adjacent roads are at risk
+
+**The LangChain Workflow:**
+1. **PromptTemplate**: Combines all three sources into a structured prompt
+2. **ChatGoogleGenerativeAI**: Gemini 2.5 Flash processes the context
+3. **PydanticOutputParser**: Forces structured JSON output
+
+**Output per Prediction:**
+```json
+{
+  'lat': 28.61,
+  'lng': 77.21,
+  'type': 'Drainage Overflow',
+  'risk': 'High (92%)',
+  'probability': 92,
+  'estimated_cost': 15000,
+  'reasoning': 'Heavy monsoon + historical clogging in this area',
+  'factors': ['Heavy Rain', 'Previous Incidents']
+}
+```
+
+**On the Dashboard:**
+- Predictions appear as orange markers on the heatmap
+- Admins can **one-click convert predictions to tickets**
+- Field teams get dispatched before the failure even happens!"
+
+---
+
+## AI FEATURE 3: AUTO-DEPARTMENT ROUTING
+
+**[Visual: Category → Department mapping flowchart]**
+
+**Narrator:**
+"No human needs to sort reports. The AI category automatically maps to the right department:
+
+| AI Category | Assigned Department |
+|-------------|---------------------|
+| Pothole, Sidewalk, Infrastructure | **Roads** |
+| Garbage, Illegal Dumping | **Waste** |
+| Sewage, Drainage, Waterlogging | **Water** |
+| Streetlight | **Electrical** |
+| Everything else | **General** |
+
+Department heads only see their own issues. No cross-wiring, no delays."
+
+---
+
+## AI FEATURE 4: VOICE COMMAND INTERFACE
+
+**[Visual: Admin speaking into microphone → Dashboard responding]**
+
+**Narrator:**
+"Government admins can control the entire dashboard with their voice using the **Web Speech API**:
+
+**Example Commands:**
+- 'Show me the heatmap' → Opens map view
+- 'How many reports?' → Speaks: 'You have 142 total reports, 98 resolved'
+- 'Show critical incidents' → Highlights high-severity markers
+- 'Filter to Delhi' → Zooms to Delhi data
+- 'Open AI predictions' → Triggers predictive analysis
+- 'Refresh data' → Reloads dashboard
+
+The system uses **text-to-speech** to respond audibly – perfect for hands-free command centers."
+
+---
+
+## AI FEATURE 5: PR CONTENT & IMAGE GENERATION
+
+**[Visual: Generated PR statement + AI image generation attempt]**
+
+**Narrator:**
+"Admins can generate **public relations content** with one click:
+
+**PR Text Generation:**
+- Takes weekly statistics: total issues, resolution rate, departments involved
+- Gemini crafts a professional government announcement
+- Ready to publish to social media or press releases
+
+**PR Image Generation (Experimental):**
+- Attempts to use **Imagen 3** (Google's image model)
+- Generates smart city visuals matching the PR theme
+- Falls back to curated placeholders if unavailable
+
+Example output:
+> 'This week, UrbanEye resolved 87 infrastructure issues across Delhi NCR. Our teams addressed 23 potholes, cleared 15 garbage hotspots, and fixed 12 drainage blocks. Average resolution time: 2.3 days.'"
+
+---
+
+## AI FEATURE 6: API KEY ROTATION & RESILIENCE
+
+**[Visual: Multiple API keys rotating on quota error]**
+
+**Narrator:**
+"Production AI needs resilience. UrbanEye supports **multi-key rotation**:
+
+1. Load multiple Gemini API keys from environment
+2. On '429 Quota Exceeded' error → Automatically rotate to next key
+3. Retry the same request without user intervention
+4. Logs which key is active for debugging
+
+This ensures the AI never goes down during peak usage."
+
+---
+
+## AI TECHNOLOGY STACK SUMMARY
+
+| AI Capability | Technology |
+|---------------|------------|
+| Image Analysis | Google Gemini 2.5 Flash (Vision) |
+| Predictive Intelligence | LangChain + Gemini + Pydantic |
+| Weather Data | Open-Meteo API |
+| News Search | DuckDuckGo Search API |
+| Voice Commands | Web Speech API (Browser) |
+| PR Image Gen | Google Imagen 3 (Experimental) |
+| Structured Output | Pydantic Models |
+| API Resilience | Multi-Key Rotation |
 
 ---
 
@@ -282,12 +441,30 @@ All three components communicate through secure API endpoints, with PostgreSQL s
 | Web Frontend | React + Vite + Tailwind + Recharts + Leaflet |
 | Backend | Flask + Flask-RESTX + SQLAlchemy |
 | Database | PostgreSQL (Render) / SQLite (Local) |
-| AI | Google Gemini 2.5 Flash + LangChain |
+| AI - Vision | Google Gemini 2.5 Flash (Multi-modal) |
+| AI - Predictions | LangChain + Pydantic + Gemini |
+| AI - Weather | Open-Meteo API |
+| AI - News | DuckDuckGo Search API |
+| AI - Voice | Web Speech API |
+| AI - Images | Google Imagen 3 (Experimental) |
 | Auth | JWT + bcrypt + Google OAuth |
 | Deployment | Render / Docker |
 
 ---
 
-**Total Duration**: ~4:30 (can trim to 3:00 by condensing role section)  
+# AI ROLE SUMMARY - QUICK REFERENCE
+
+| AI Feature | Where Used | User Benefit |
+|------------|------------|--------------|
+| **Image Analysis** | Mobile App (Report Issue) | Auto-categorize photos, no manual typing |
+| **Auto-Routing** | Backend | Reports reach correct dept instantly |
+| **Predictive Maint.** | Gov Admin Dashboard | Prevent failures before they happen |
+| **Voice Commands** | Gov Admin Dashboard | Hands-free dashboard control |
+| **PR Generation** | Gov Admin Dashboard | Instant press releases |
+| **API Resilience** | Backend | 99.9% uptime even under load |
+
+---
+
+**Total Duration**: ~6:00 (full version) / ~3:00 (condensed)  
 **Tone**: Professional, informative, engaging  
 **Audience**: Stakeholders, investors, developers, government officials
