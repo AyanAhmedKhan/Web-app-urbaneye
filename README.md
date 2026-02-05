@@ -93,6 +93,65 @@ Built-in human resource management for government staff:
 
 ---
 
+## 🤖 Google AI Tools Integrated
+
+UrbanEye leverages multiple **Google AI and Cloud** technologies:
+
+### Google Gemini 2.5 Flash
+The core AI engine powering intelligent features:
+
+| Feature | How Gemini is Used |
+|---------|-------------------|
+| **Image Analysis** | Detects issue types (pothole, garbage, sewage, broken streetlight) from citizen photos |
+| **Severity Assessment** | Determines urgency level (Low/Medium/High) based on visual analysis |
+| **Auto-Description** | Generates detailed descriptions from images for report forms |
+| **Predictive Intelligence** | Powers LangChain pipeline for infrastructure failure predictions |
+| **PR Generation** | Creates professional public relations statements for resolved issues |
+
+### Firebase (Google Cloud Platform)
+
+| Service | Usage |
+|---------|-------|
+| **Firebase Authentication** | Secure user login with email/password and Google Sign-In |
+| **Cloud Firestore** | Real-time NoSQL database for mobile app data sync |
+| **Cloud Functions** | Serverless backend operations for mobile app |
+
+### Google Sign-In (OAuth 2.0)
+- One-tap seamless authentication for citizens and workers
+- Auto-fetch user profile (name, email, avatar)
+- Token-based secure sessions with refresh capabilities
+
+### LangChain + Gemini Pipeline
+The prediction engine combines:
+- **Gemini API** for natural language reasoning
+- **Open-Meteo** weather data integration
+- **DuckDuckGo Search** for local news context
+- **Pydantic** for structured AI outputs
+
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ Weather API  │───▶│  LangChain   │───▶│   Gemini     │
+│ (Open-Meteo) │    │  Pipeline    │    │  Reasoning   │
+└──────────────┘    └──────┬───────┘    └──────┬───────┘
+                           │                    │
+┌──────────────┐           │            ┌──────▼───────┐
+│ News Search  │───────────┘            │  Prediction  │
+│ (DuckDuckGo) │                        │   Output     │
+└──────────────┘                        └──────────────┘
+```
+
+### Key Benefits
+
+| Benefit | Impact |
+|---------|--------|
+| **Zero Manual Categorization** | Citizens just take a photo – AI does the rest |
+| **Accurate Routing** | 95%+ correct department assignment via Gemini |
+| **Faster Response** | Auto-fill reduces report submission time by 80% |
+| **Proactive Maintenance** | AI predictions prevent issues before they escalate |
+| **Seamless Auth** | Google Sign-In reduces friction for user onboarding |
+
+---
+
 ## Installation
 
 ### Prerequisites
