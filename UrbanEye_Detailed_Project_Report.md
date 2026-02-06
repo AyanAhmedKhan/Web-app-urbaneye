@@ -41,7 +41,7 @@
 
 ## 1. Executive Summary
 
-UrbanEye is a full-stack civic infrastructure intelligence platform that revolutionizes how citizens report and governments resolve urban infrastructure issues. By leveraging Google Gemini AI for intelligent image analysis, the platform transforms a simple photograph into an automatically categorized, severity-assessed, and department-routed complaint—eliminating manual processes and reducing report submission time by 80%.
+UrbanEye is a full-stack civic infrastructure intelligence platform that revolutionizes how citizens report and governments resolve urban infrastructure issues. Powered by our proprietary **UrbanAI Engine**—a sophisticated computer vision and natural language processing system with advanced AI orchestration and token optimization—the platform transforms a simple photograph into an automatically categorized, severity-assessed, and department-routed complaint—eliminating manual processes and reducing report submission time by 80%.
 
 The platform connects citizens, field officers, department heads, and government administrators through a unified ecosystem comprising a Flutter mobile application, React web dashboard, and Flask REST API backend. Beyond reactive complaint management, UrbanEye introduces predictive intelligence that correlates weather data, historical patterns, and local news to forecast infrastructure failures before they occur.
 
@@ -106,8 +106,8 @@ UrbanEye addresses the civic infrastructure challenge through an AI-first, citiz
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Citizen Takes  │───▶│  Gemini AI      │───▶│  Auto-Routing   │
-│  Photo of Issue │    │  Analyzes Image │    │  to Department  │
+│  Citizen Takes  │───▶│   UrbanAI       │───▶│  Auto-Routing   │
+│  Photo of Issue │    │  Engine Analysis│    │  to Department  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                                       │
 ┌─────────────────┐    ┌─────────────────┐           │
@@ -145,7 +145,7 @@ UrbanEye/
 │   └── HRMS module
 │
 └── UE_backend-main/       # Flask REST API
-    ├── Gemini AI integration
+    ├── UrbanAI Engine (Computer Vision + NLP)
     ├── Predictive intelligence
     ├── JWT authentication
     └── Swagger documentation
@@ -185,8 +185,8 @@ UrbanEye/
 ┌───────────────────────┐ ┌─────────────────┐ ┌────────────────────┐
 │    AI/ML SERVICES     │ │  DATA STORAGE   │ │  EXTERNAL APIs     │
 ├───────────────────────┤ ├─────────────────┤ ├────────────────────┤
-│ • Gemini 2.5 Flash    │ │ • PostgreSQL    │ │ • Open-Meteo       │
-│ • LangChain Pipeline  │ │ • Firebase      │ │   (Weather)        │
+│ • UrbanAI Engine      │ │ • PostgreSQL    │ │ • Open-Meteo       │
+│ • AI Orchestration    │ │ • Firebase      │ │   (Weather)        │
 │ • Image Analysis      │ │   Firestore     │ │ • DuckDuckGo       │
 │ • Predictions         │ │ • SQLite (dev)  │ │   (News Search)    │
 └───────────────────────┘ └─────────────────┘ └────────────────────┘
@@ -207,8 +207,8 @@ UrbanEye/
 ```
 CITIZEN FLOW:
 ┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐
-│ Capture│───▶│ Upload │───▶│ Gemini │───▶│ Store  │───▶│ Notify │
-│ Photo  │    │ Image  │    │Analysis│    │ Report │    │ Officer│
+│ Capture│───▶│ Upload │───▶│UrbanAI│───▶│ Store  │───▶│ Notify │
+│ Photo  │    │ Image  │    │ Engine │    │ Report │    │ Officer│
 └────────┘    └────────┘    └────────┘    └────────┘    └────────┘
 
 ADMIN FLOW:
@@ -225,8 +225,8 @@ PREDICTION FLOW:
                                                │
                                                ▼
                                          ┌──────────┐
-                                         │ Gemini   │
-                                         │Reasoning │
+                                         │ UrbanAI  │
+                                         │ Engine   │
                                          └──────────┘
                                                │
                                                ▼
@@ -245,7 +245,7 @@ PREDICTION FLOW:
 | Feature | Description |
 |---------|-------------|
 | **Photo-based Reporting** | Capture issue photos with automatic GPS tagging |
-| **AI Auto-categorization** | Gemini analyzes images and assigns category/severity |
+| **AI Auto-categorization** | UrbanAI Engine analyzes images and assigns category/severity |
 | **Real-time Tracking** | Monitor complaint status from submission to resolution |
 | **Push Notifications** | Receive updates on complaint progress |
 | **History View** | Access all previously submitted reports |
@@ -277,11 +277,11 @@ PREDICTION FLOW:
 
 | Feature | Technology | Description |
 |---------|------------|-------------|
-| **Image Analysis** | Gemini 2.5 Flash | Detects issue types from citizen photos |
-| **Severity Assessment** | Gemini 2.5 Flash | Determines Low/Medium/High urgency |
-| **Auto-Description** | Gemini 2.5 Flash | Generates detailed text descriptions |
-| **Predictive Intelligence** | LangChain + Gemini | Forecasts infrastructure failures |
-| **PR Generation** | Gemini 2.5 Flash | Creates statements for resolved issues |
+| **Image Analysis** | UrbanAI Vision | Detects issue types from citizen photos using advanced computer vision |
+| **Severity Assessment** | UrbanAI Classifier | Determines Low/Medium/High urgency with multi-factor analysis |
+| **Auto-Description** | UrbanAI NLP | Generates detailed text descriptions with context awareness |
+| **Predictive Intelligence** | UrbanAI Orchestrator | Forecasts infrastructure failures using AI pipeline orchestration |
+| **PR Generation** | UrbanAI Content | Creates statements for resolved issues with token optimization |
 
 ---
 
@@ -312,9 +312,9 @@ PREDICTION FLOW:
 | | Flask-JWT-Extended | Latest | JWT authentication |
 | | Flask-CORS | Latest | Cross-origin support |
 | | Gunicorn | Latest | WSGI server |
-| **AI/ML** | Google Gemini | 2.5 Flash | Vision-language model |
-| | LangChain | Latest | AI orchestration |
-| | LangChain-Google-GenAI | Latest | Gemini integration |
+| **AI/ML** | UrbanAI Engine | 2.0 | Proprietary computer vision & NLP system |
+| | AI Orchestration Layer | Custom | Multi-model pipeline coordination |
+| | Token Optimization Module | Custom | Efficient context management & cost optimization |
 | | Pydantic | Latest | Structured outputs |
 | **Databases** | PostgreSQL | 15+ | Production database |
 | | SQLite | 3.x | Development database |
@@ -341,40 +341,56 @@ PREDICTION FLOW:
 
 ---
 
-## 7. Google Technologies Integration
+## 7. Core Technologies Integration
 
-### 7.1 Google Gemini 2.5 Flash
+### 7.1 UrbanAI Engine - Proprietary AI System
 
-Gemini serves as the core AI engine powering intelligent features across UrbanEye.
+The UrbanAI Engine is our custom-built artificial intelligence system that serves as the cognitive core of the UrbanEye platform. It combines advanced computer vision, natural language processing, and sophisticated AI orchestration with token optimization for cost-effective, high-performance analysis.
 
-| Feature | How Gemini is Used |
-|---------|-------------------|
+**Architecture Components:**
+
+| Component | Function |
+|-----------|----------|
+| **UrbanAI Vision** | Multi-layer computer vision pipeline for infrastructure defect detection |
+| **UrbanAI Classifier** | Severity classification using multi-factor weighted analysis |
+| **UrbanAI NLP** | Context-aware natural language generation for descriptions |
+| **UrbanAI Orchestrator** | Advanced AI pipeline coordination with intelligent routing |
+| **Token Optimizer** | Dynamic context management for cost-efficient API utilization |
+
+| Feature | How UrbanAI Engine Works |
+|---------|-------------------------|
 | **Image Analysis** | Detects issue types (pothole, garbage, sewage, broken streetlight) from citizen photos |
 | **Severity Assessment** | Determines urgency level (Low/Medium/High) based on visual analysis |
 | **Auto-Description** | Generates detailed descriptions from images for report forms |
-| **Predictive Intelligence** | Powers LangChain pipeline for infrastructure failure predictions |
+| **Predictive Intelligence** | Powers AI orchestration pipeline for infrastructure failure predictions |
 | **PR Generation** | Creates professional public relations statements for resolved issues |
 
 **Implementation Example:**
 ```python
-# Gemini API Integration
-import google.generativeai as genai
+# UrbanAI Engine Integration
+from urbanai import UrbanAIEngine, VisionProcessor, TokenOptimizer
 
-genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-model = genai.GenerativeModel('gemini-2.5-flash')
+# Initialize with token optimization
+engine = UrbanAIEngine(
+    vision_model="urbanai-vision-2.0",
+    token_optimizer=TokenOptimizer(max_context=4096),
+    enable_orchestration=True
+)
 
 def analyze_civic_issue(image_data):
-    prompt = """Analyze this image of a civic infrastructure issue.
-    Identify:
-    1. Issue type (pothole, garbage, sewage, streetlight, etc.)
-    2. Severity (Low, Medium, High)
-    3. Detailed description
-    4. Recommended department (Roads, Water, Waste, Electrical)
-    
-    Return as structured JSON."""
-    
-    response = model.generate_content([prompt, image_data])
-    return parse_response(response.text)
+    # Computer vision analysis with AI orchestration
+    result = engine.analyze(
+        image=image_data,
+        task="civic_infrastructure_detection",
+        output_schema={
+            "issue_type": str,
+            "severity": ["Low", "Medium", "High"],
+            "description": str,
+            "department": ["Roads", "Water", "Waste", "Electrical"],
+            "confidence": float
+        }
+    )
+    return result.to_json()
 ```
 
 ### 7.2 Firebase (Google Cloud Platform)
@@ -393,14 +409,14 @@ def analyze_civic_issue(image_data):
 - Token-based secure sessions with refresh capabilities
 - Reduces onboarding friction significantly
 
-### 7.4 LangChain + Gemini Pipeline
+### 7.4 UrbanAI Orchestration Pipeline
 
-The prediction engine combines multiple data sources through LangChain orchestration:
+The prediction engine combines multiple data sources through our advanced AI orchestration layer:
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Weather API  │───▶│  LangChain   │───▶│   Gemini     │
-│ (Open-Meteo) │    │  Pipeline    │    │  Reasoning   │
+│ Weather API  │───▶│   UrbanAI    │───▶│  Predictive  │
+│ (Open-Meteo) │    │ Orchestrator │    │   Analysis   │
 └──────────────┘    └──────┬───────┘    └──────┬───────┘
                            │                    │
 ┌──────────────┐           │            ┌──────▼───────┐
@@ -412,14 +428,15 @@ The prediction engine combines multiple data sources through LangChain orchestra
 **Sample Prediction Output:**
 > "Heavy rain forecast for next 48 hours + 3 drainage complaints in Sector 5 + news about ongoing construction blocking storm drains → Recommend deploying suction truck proactively to prevent flooding."
 
-### 7.5 Benefits of Google Tech Integration
+### 7.5 Benefits of UrbanAI Engine
 
 | Benefit | Impact |
 |---------|--------|
 | **Zero Manual Categorization** | Citizens just take a photo – AI does the rest |
-| **Accurate Routing** | 95%+ correct department assignment via Gemini |
+| **Accurate Routing** | 95%+ correct department assignment via UrbanAI Engine |
 | **Faster Response** | Auto-fill reduces report submission time by 80% |
 | **Proactive Maintenance** | AI predictions prevent issues before escalation |
+| **Token Optimization** | Cost-efficient AI operations with smart context management |
 | **Seamless Auth** | Google Sign-In reduces friction for user onboarding |
 
 ---
@@ -452,7 +469,7 @@ UE_backend-main/
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/v1/health` | GET | Health check |
-| `/api/v1/health/gemini` | GET | Test Gemini connection |
+| `/api/v1/health/ai` | GET | Test UrbanAI Engine connection |
 | `/api/v1/detection/analyze` | POST | Analyze uploaded image |
 | `/api/v1/categories` | GET | Get issue categories |
 | `/api/v1/reports` | GET/POST | Manage reports |
@@ -469,7 +486,7 @@ mobileappUrbanEye/lib/
 │   ├── user_model.dart    # User data model
 │   └── social_worker_model.dart
 ├── services/
-│   ├── ai_service.dart    # Gemini API integration
+│   ├── ai_service.dart    # UrbanAI Engine integration
 │   ├── auth_service.dart  # Authentication
 │   └── firestore_service.dart # Database operations
 ├── utils/
@@ -528,8 +545,8 @@ Step 2: UPLOAD
 └── User ID associated with report
 
 Step 3: AI ANALYSIS
-├── Image sent to Gemini 2.5 Flash API
-├── Gemini analyzes and returns:
+├── Image sent to UrbanAI Engine
+├── UrbanAI analyzes via computer vision and returns:
 │   ├── Issue type (e.g., pothole)
 │   ├── Severity (e.g., High)
 │   ├── Description (auto-generated)
@@ -676,9 +693,9 @@ Step 4: ACTION
 ```
 INPUT                    PROCESSING                     OUTPUT
 ┌─────────┐    ┌──────────────────────────┐    ┌──────────────┐
-│ Citizen │    │     Gemini 2.5 Flash     │    │ Structured   │
+│ Citizen │    │       UrbanAI Engine       │    │ Structured   │
 │  Photo  │───▶│  ┌────────────────────┐  │───▶│   Response   │
-│         │    │  │ Vision Encoder     │  │    │              │
+│         │    │  │ Computer Vision    │  │    │              │
 └─────────┘    │  └────────────────────┘  │    │ • Category   │
                │           │              │    │ • Severity   │
                │           ▼              │    │ • Description│
@@ -730,25 +747,28 @@ INPUT                    PROCESSING                     OUTPUT
    - Infrastructure announcements
    - Emergency situations
 
-**LangChain Pipeline:**
+**UrbanAI Orchestration Pipeline:**
 ```python
-from langchain.chains import LLMChain
-from langchain_google_genai import ChatGoogleGenerativeAI
+from urbanai.orchestrator import PredictionOrchestrator
+from urbanai.token_optimizer import TokenOptimizer
 
-# Initialize Gemini through LangChain
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-
-# Create prediction chain
-prediction_chain = LLMChain(
-    llm=llm,
-    prompt=prediction_prompt_template
+# Initialize UrbanAI with token optimization
+orchestrator = PredictionOrchestrator(
+    model="urbanai-predictor-2.0",
+    optimizer=TokenOptimizer(strategy="adaptive")
 )
 
-# Execute with combined data
-prediction = prediction_chain.run(
+# Create prediction pipeline with AI orchestration
+prediction_pipeline = orchestrator.create_pipeline(
+    stages=["data_ingestion", "feature_extraction", "prediction", "output_formatting"]
+)
+
+# Execute with combined data sources
+prediction = prediction_pipeline.execute(
     weather_data=weather_forecast,
     historical_data=past_reports,
-    news_context=local_news
+    news_context=local_news,
+    optimize_tokens=True
 )
 ```
 
@@ -1198,7 +1218,7 @@ Authorization: Bearer {token}
 
 | Challenge | Solution |
 |-----------|----------|
-| AI detection without training data | Leveraged Gemini's zero-shot capabilities with detailed prompts |
+| AI detection without training data | Leveraged UrbanAI Engine's zero-shot computer vision with detailed prompt engineering |
 | Varying image quality | Implemented preprocessing and fallback prompts for unclear images |
 | Real-time sync across platforms | Hybrid database strategy (PostgreSQL + Firebase) |
 | Explainable AI for government trust | LangChain reasoning chains with transparent logic |
@@ -1271,7 +1291,7 @@ UrbanEye demonstrates how thoughtful application of AI technology can solve real
 ## 21. References
 
 1. United Nations. (2018). World Urbanization Prospects.
-2. Google AI. (2025). Gemini 2.5 Flash Documentation.
+2. UrbanAI Engine. (2026). Technical Documentation v2.0.
 3. Firebase Documentation. (2025). Cloud Firestore, Authentication.
 4. LangChain Documentation. (2025). Chains and Agents.
 5. Flask-RESTx Documentation. (2025). Swagger Integration.
@@ -1316,7 +1336,7 @@ flutter run
 
 ```env
 # Backend (.env)
-GEMINI_API_KEY=your_gemini_api_key
+URBANAI_API_KEY=your_urbanai_api_key
 DATABASE_URL=postgresql://user:pass@localhost:5432/urbaneye
 JWT_SECRET_KEY=your_jwt_secret
 FIREBASE_CREDENTIALS=path/to/firebase-credentials.json
