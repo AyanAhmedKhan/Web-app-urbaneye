@@ -388,6 +388,21 @@
     }
 }
 
+/* Streaming cursor */
+.chatbot-streaming-cursor {
+    display: inline-block;
+    animation: chatbot-blink 0.7s step-end infinite;
+    color: #4f46e5;
+    font-weight: 300;
+    margin-left: 1px;
+}
+
+@keyframes chatbot-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
 /* Send button */
 .chatbot-send-btn {
     width: 38px;
