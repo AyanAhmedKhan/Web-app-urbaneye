@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Menu, X, LogOut, User, Activity, Shield, Home, Sparkles, LayoutDashboard, ChevronRight, Eye } from 'lucide-react';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
@@ -118,6 +119,7 @@ const Navbar = () => {
 
                         {/* Desktop Auth Actions */}
                         <div className="hidden md:flex items-center gap-3">
+                            <LanguageSwitcher isScrolled={isScrolled} />
                             {isAuthenticated() ? (
                                 <div className="flex items-center gap-3">
                                     <div className={`
@@ -250,6 +252,11 @@ const Navbar = () => {
                                 <ChevronRight size={18} className="text-slate-300" />
                             </NavLink>
                         )}
+                    </div>
+
+                    {/* Mobile Language Switcher */}
+                    <div className="mt-4 px-4">
+                        <LanguageSwitcher isScrolled={true} />
                     </div>
 
                     {/* Mobile User Section */}
