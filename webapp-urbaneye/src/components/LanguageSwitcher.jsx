@@ -3,10 +3,17 @@ import { useLocale, setLocale } from '@lingo.dev/compiler/react';
 import { Globe } from 'lucide-react';
 
 const LOCALES = [
-    { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'en', label: 'English', flag: '��' },
     { code: 'hi', label: 'हिन्दी', flag: '🇮🇳' },
-    { code: 'es', label: 'Español', flag: '🇪🇸' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+    { code: 'bn', label: 'বাংলা', flag: '🇮🇳' },
+    { code: 'ta', label: 'தமிழ்', flag: '��' },
+    { code: 'te', label: 'తెలుగు', flag: '🇮🇳' },
+    { code: 'mr', label: 'मराठी', flag: '🇮🇳' },
+    { code: 'gu', label: 'ગુજરાતી', flag: '🇮🇳' },
+    { code: 'kn', label: 'ಕನ್ನಡ', flag: '🇮🇳' },
+    { code: 'ml', label: 'മലയാളം', flag: '🇮🇳' },
+    { code: 'pa', label: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+    { code: 'ur', label: 'اردو', flag: '��' },
 ];
 
 const LanguageSwitcher = ({ isScrolled = false }) => {
