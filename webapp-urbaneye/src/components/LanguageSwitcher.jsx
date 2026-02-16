@@ -3,17 +3,11 @@ import { useLocale, setLocale } from '@lingo.dev/compiler/react';
 import { Globe } from 'lucide-react';
 
 const LOCALES = [
-    { code: 'en', label: 'English', flag: '��' },
-    { code: 'hi', label: 'हिन्दी', flag: '🇮🇳' },
-    { code: 'bn', label: 'বাংলা', flag: '🇮🇳' },
-    { code: 'ta', label: 'தமிழ்', flag: '��' },
-    { code: 'te', label: 'తెలుగు', flag: '🇮🇳' },
-    { code: 'mr', label: 'मराठी', flag: '🇮🇳' },
-    { code: 'gu', label: 'ગુજરાતી', flag: '🇮🇳' },
-    { code: 'kn', label: 'ಕನ್ನಡ', flag: '🇮🇳' },
-    { code: 'ml', label: 'മലയാളം', flag: '🇮🇳' },
-    { code: 'pa', label: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-    { code: 'ur', label: 'اردو', flag: '��' },
+    { code: 'en', label: 'English', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'hi', label: '\u0939\u093F\u0928\u094D\u0926\u0940', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'bn', label: '\u09AC\u09BE\u0982\u09B2\u09BE', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'ta', label: '\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'te', label: '\u0C24\u0C46\u0C32\u0C41\u0C17\u0C41', flag: '\u{1F1EE}\u{1F1F3}' },
 ];
 
 const LanguageSwitcher = ({ isScrolled = false }) => {
