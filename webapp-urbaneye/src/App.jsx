@@ -16,6 +16,7 @@ import DeptHeadDashboard from './components/Dashboard/DeptHeadDashboard';
 import FieldOfficerDashboard from './components/Dashboard/FieldOfficerDashboard';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import Chatbot from './components/Chatbot';
 
 function App() {
     return (
@@ -110,6 +111,7 @@ function App() {
                 {/* Catch-all 404 */}
                 <Route path="*" element={<NotFound />} />
             </Routes>
+            <Chatbot />
         </AuthProvider>
     );
 }
