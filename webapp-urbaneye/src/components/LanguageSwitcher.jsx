@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useLocale, setLocale } from '@lingo.dev/compiler/react';
+import { useLingoContext } from '@lingo.dev/compiler/react';
 import { Globe } from 'lucide-react';
 
 const LOCALES = [
@@ -9,7 +9,7 @@ const LOCALES = [
 ];
 
 const LanguageSwitcher = ({ isScrolled = false }) => {
-    const locale = useLocale();
+    const { locale, setLocale } = useLingoContext();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
