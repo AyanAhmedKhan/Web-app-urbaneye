@@ -12,7 +12,7 @@ export default defineConfig({
       sourceLocale: 'en',
       targetLocales: ['hi', 'mr'],
       models: 'lingo.dev',
-      dev: { usePseudotranslator: true },
+      dev: { usePseudotranslator: false },
     }),
     react(),
   ],

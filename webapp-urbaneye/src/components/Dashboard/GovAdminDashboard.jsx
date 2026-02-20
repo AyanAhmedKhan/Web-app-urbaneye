@@ -2316,7 +2316,7 @@ const GovAdminDashboard = () => {
             </main >
 
             {/* Floating Voice Command Button */}
-            <div className="fixed bottom-6 right-6 z-[1000] flex flex-col items-end gap-3">
+            <div className="fixed bottom-24 right-6 z-[1000] flex flex-col items-end gap-3">
                 {/* Voice Feedback Overlay */}
                 <AnimatePresence>
                     {(voiceFeedback || voiceTranscript) && (
