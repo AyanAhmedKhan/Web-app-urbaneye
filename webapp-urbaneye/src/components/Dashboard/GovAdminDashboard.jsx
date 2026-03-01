@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import {
     LayoutDashboard, Users, AlertTriangle, FileText, Settings, LogOut,
     Menu, X, Bell, Search, MapPin, Filter, Database, RefreshCw,
-    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff, Image, Loader2
+    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff, Image, Loader2, Brain, Flame, Wifi, Link2, AlertOctagon, Gauge
 } from 'lucide-react';
 import {
     PieChart, Pie, Cell,
@@ -740,6 +740,16 @@ const GovAdminDashboard = () => {
         { id: 'settings', icon: Settings, label: 'Settings' }
     ];
 
+    const smartCityLinks = [
+        { label: 'AI Command Center', icon: Brain, route: '/ai-command-center', color: 'from-purple-600 to-indigo-700' },
+        { label: 'Electricity Dept', icon: Zap, route: '/electricity', color: 'from-amber-400 to-yellow-600' },
+        { label: 'Gas Department', icon: Flame, route: '/gas', color: 'from-orange-500 to-red-600' },
+        { label: 'Smart Meters', icon: Gauge, route: '/smart-meters', color: 'from-amber-500 to-orange-600' },
+        { label: 'Emergency Mode', icon: AlertOctagon, route: '/emergency-mode', color: 'from-red-500 to-rose-700' },
+        { label: 'IoT Devices', icon: Wifi, route: '/smart-city-devices', color: 'from-cyan-500 to-blue-600' },
+        { label: 'Govt Integration', icon: Link2, route: '/gov-integration', color: 'from-indigo-500 to-blue-700' },
+    ];
+
     return (
 
         <div className="flex h-screen bg-slate-50 font-['Inter',sans-serif] text-slate-900 overflow-hidden">
@@ -808,6 +818,30 @@ const GovAdminDashboard = () => {
                             {!sidebarCollapsed && <span>{item.label}</span>}
                         </button>
                     ))}
+
+                    {/* Smart City Platform */}
+                    <div className={`mt-4 pt-4 border-t border-white/10 ${sidebarCollapsed ? 'px-1' : 'px-2'}`}>
+                        {!sidebarCollapsed && (
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3 px-2">Smart City Platform</p>
+                        )}
+                        <div className="flex flex-col gap-1">
+                            {smartCityLinks.map(link => (
+                                <button
+                                    key={link.route}
+                                    className={`
+                                        flex items-center gap-3 px-4 py-2.5 border-none rounded-lg font-medium cursor-pointer transition-all text-left whitespace-nowrap w-full
+                                        ${sidebarCollapsed ? 'justify-center px-3.5' : ''}
+                                        bg-transparent text-slate-400 hover:bg-white/5 hover:text-white text-sm
+                                    `}
+                                    onClick={() => { navigate(link.route); setMobileMenuOpen(false); }}
+                                    title={sidebarCollapsed ? link.label : ''}
+                                >
+                                    <link.icon size={18} className="flex-shrink-0" />
+                                    {!sidebarCollapsed && <span>{link.label}</span>}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </nav>
 
                 <div className={`border-t border-white/10 pt-5 mt-auto flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>

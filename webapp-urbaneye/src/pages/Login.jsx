@@ -1,15 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Eye, Lock, Mail, ArrowRight, Loader2, Activity, Sparkles, CheckCircle } from 'lucide-react';
+import { Eye, Lock, Mail, ArrowRight, Loader2, Activity, Sparkles, CheckCircle, Server, Wifi, Shield, Database, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
+
+// Server boot loading overlay component
+const ServerBootOverlay = ({ onComplete }) => {
+    const [step, setStep] = useState(0);
+    const steps = [
+        { label: 'Waking up Render server…', icon: Server, detail: 'Free-tier cold boot detected' },
+        { label: 'Establishing database connection…', icon: Database, detail: 'PostgreSQL handshake' },
+        { label: 'Loading authentication module…', icon: Shield, detail: 'JWT + RBAC initializing' },
+        { label: 'Connecting to UrbanAI Engine…', icon: Sparkles, detail: 'Multimodal AI pipeline' },
+        { label: 'Server ready!', icon: CheckCircle, detail: 'All systems operational' },
+    ];
+
+    useEffect(() => {
+        const timers = [];
+        steps.forEach((_, i) => {
+            timers.push(setTimeout(() => setStep(i), i * 1200));
+        });
+        timers.push(setTimeout(() => onComplete(), steps.length * 1200 + 600));
+        return () => timers.forEach(clearTimeout);
+    }, []);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-950 z-[999] flex items-center justify-center"
+        >
+            <div className="text-center max-w-md px-6">
+                <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin mx-auto mb-8" />
+                <h2 className="text-white text-xl font-bold mb-2">Starting UrbanEye Server</h2>
+                <p className="text-slate-500 text-sm mb-8">This may take 15–30 seconds on first request (Render free-tier cold boot)</p>
+                <div className="space-y-3 text-left">
+                    {steps.map((s, i) => {
+                        const Icon = s.icon;
+                        return (
+                            <div
+                                key={i}
+                                className={`flex items-center gap-3 transition-all duration-500 ${i <= step ? 'opacity-100' : 'opacity-15'}`}
+                            >
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    {i < step ? (
+                                        <CheckCircle size={16} className="text-emerald-400" />
+                                    ) : i === step ? (
+                                        <div className="w-4 h-4 border-2 border-indigo-400/40 border-t-indigo-400 rounded-full animate-spin" />
+                                    ) : (
+                                        <div className="w-4 h-4 rounded-full border border-slate-600" />
+                                    )}
+                                </div>
+                                <div className="flex-1">
+                                    <div className={`text-sm font-semibold ${i <= step ? 'text-white' : 'text-slate-600'}`}>{s.label}</div>
+                                    <div className={`text-xs ${i <= step ? 'text-slate-400' : 'text-slate-700'}`}>{s.detail}</div>
+                                </div>
+                                {i < step && <span className="text-emerald-400 text-xs font-mono">✓</span>}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="mt-8 text-xs text-slate-600 flex items-center justify-center gap-2">
+                    <Wifi size={10} className="text-indigo-400 animate-pulse" />
+                    Backend deployed on Render · Auto-scaling
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+const demoCredentials = [
+    { role: 'Gov Admin', email: 'admin@gov.in', password: 'ayankhan', color: 'bg-red-100 text-red-600', desc: 'Full analytics, AI predictions, heatmap' },
+    { role: 'Super Admin', email: 'ayanpthan768@gmail.com', password: 'ayankhan', color: 'bg-purple-100 text-purple-600', desc: 'System configuration, user management' },
+    { role: 'Dept Head', email: 'depthead@roads.gov.in', password: 'ayankhan', color: 'bg-amber-100 text-amber-600', desc: 'Department reports, team management' },
+    { role: 'Field Officer', email: 'officer@mcd.gov.in', password: 'ayankhan', color: 'bg-teal-100 text-teal-600', desc: 'Task assignments, on-ground updates' },
+    { role: 'Civilian', email: 'ayan.ahmedkhan591@gmail.com', password: 'ayankhan', color: 'bg-blue-100 text-blue-600', desc: 'Report issues, track status' },
+    { role: 'Gig Worker', email: 'gig@urbaneye.in', password: 'ayankhan', color: 'bg-orange-100 text-orange-600', desc: 'On-demand task pickup, earnings' },
+    { role: 'Social Worker', email: 'ngo@urbaneye.in', password: 'ayankhan', color: 'bg-pink-100 text-pink-600', desc: 'NGO collaboration, social issues' },
+];
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showServerBoot, setShowServerBoot] = useState(false);
+    const [pendingLogin, setPendingLogin] = useState(null);
+    const [showAllCreds, setShowAllCreds] = useState(false);
 
     const { login, googleLogin, isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -38,28 +117,46 @@ const Login = () => {
         setIsSubmitting(true);
         setError('');
 
-        const result = await login(email, password);
+        // Show server boot animation immediately
+        setShowServerBoot(true);
 
-        if (result.success) {
-            navigate(from, { replace: true });
+        // Start login in background — the overlay will dismiss on its own timeline
+        const loginPromise = login(email, password);
+        setPendingLogin(loginPromise);
+    };
+
+    const handleServerBootComplete = async () => {
+        if (pendingLogin) {
+            const result = await pendingLogin;
+            setShowServerBoot(false);
+            if (result.success) {
+                navigate(from, { replace: true });
+            } else {
+                setError(result.error);
+            }
         } else {
-            setError(result.error);
+            setShowServerBoot(false);
         }
         setIsSubmitting(false);
+        setPendingLogin(null);
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
         setError('');
-        const result = await googleLogin(credentialResponse);
-        if (result.success) {
-            navigate(from, { replace: true });
-        } else {
-            setError(result.error);
-        }
+        setShowServerBoot(true);
+        const loginPromise = googleLogin(credentialResponse);
+        setPendingLogin(loginPromise);
     };
+
+    const visibleCreds = showAllCreds ? demoCredentials : demoCredentials.slice(0, 3);
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Server Boot Overlay */}
+            <AnimatePresence>
+                {showServerBoot && <ServerBootOverlay onComplete={handleServerBootComplete} />}
+            </AnimatePresence>
+
             {/* Animated Background (Matching Home) */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-60 animate-pulse" />
@@ -205,7 +302,7 @@ const Login = () => {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="animate-spin" size={20} />
-                                        <span>Signing In...</span>
+                                        <span>Connecting…</span>
                                     </>
                                 ) : (
                                     <>
@@ -216,43 +313,37 @@ const Login = () => {
                             </button>
                         </form>
 
-                        {/* Demo Credentials - Auto-fill Helper */}
+                        {/* Demo Credentials - All Roles */}
                         <div className="mt-8 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Demo Credentials</h3>
-                            <div className="space-y-2">
-                                <button
-                                    onClick={() => { setEmail('admin@gov.in'); setPassword('ayankhan'); }}
-                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
-                                >
-                                    <div className="flex justify-between items-center mb-1">
-                                        <span className="font-bold text-slate-700">Gov Admin</span>
-                                        <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-mono">admin@gov.in</span>
-                                    </div>
-                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
-                                </button>
-
-                                <button
-                                    onClick={() => { setEmail('ayan.ahmedkhan591@gmail.com'); setPassword('ayankhan'); }}
-                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
-                                >
-                                    <div className="flex justify-between items-center mb-1">
-                                        <span className="font-bold text-slate-700">Civilian</span>
-                                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded font-mono">ayan.ahmedkhan591@gmail.com</span>
-                                    </div>
-                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
-                                </button>
-
-                                <button
-                                    onClick={() => { setEmail('ayanpthan768@gmail.com'); setPassword('ayankhan'); }}
-                                    className="w-full text-left bg-white p-2 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
-                                >
-                                    <div className="flex justify-between items-center mb-1">
-                                        <span className="font-bold text-slate-700">Super Admin</span>
-                                        <span className="text-[10px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded font-mono">ayanpthan768@gmail.com</span>
-                                    </div>
-                                    <div className="text-slate-400 font-mono">Pass: ayankhan</div>
-                                </button>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Demo Credentials</h3>
+                                <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{demoCredentials.length} roles</span>
                             </div>
+                            <div className="space-y-1.5">
+                                {visibleCreds.map((cred) => (
+                                    <button
+                                        key={cred.role}
+                                        onClick={() => { setEmail(cred.email); setPassword(cred.password); setError(''); }}
+                                        className="w-full text-left bg-white p-2.5 rounded-lg border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition-all text-xs group"
+                                    >
+                                        <div className="flex justify-between items-center mb-0.5">
+                                            <span className="font-bold text-slate-700">{cred.role}</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${cred.color}`}>{cred.email}</span>
+                                        </div>
+                                        <div className="text-slate-400">{cred.desc}</div>
+                                    </button>
+                                ))}
+                            </div>
+                            {demoCredentials.length > 3 && (
+                                <button
+                                    onClick={() => setShowAllCreds(!showAllCreds)}
+                                    className="w-full mt-2 text-xs text-indigo-500 hover:text-indigo-700 font-semibold flex items-center justify-center gap-1 py-1.5 transition-colors"
+                                >
+                                    {showAllCreds ? 'Show less' : `Show all ${demoCredentials.length} roles`}
+                                    <ChevronRight size={12} className={`transition-transform ${showAllCreds ? 'rotate-90' : ''}`} />
+                                </button>
+                            )}
+                            <div className="mt-2 text-[10px] text-slate-400 text-center font-mono">Password for all: ayankhan</div>
                         </div>
 
                         <div className="mt-8 text-center">
@@ -265,8 +356,8 @@ const Login = () => {
                         </div>
                     </div>
                 </motion.div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

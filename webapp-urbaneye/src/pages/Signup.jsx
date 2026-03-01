@@ -1,9 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { User, Mail, Lock, ArrowRight, AlertCircle, Loader2, Activity, Sparkles, Eye, CheckCircle, Trophy } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Mail, Lock, ArrowRight, AlertCircle, Loader2, Activity, Sparkles, Eye, CheckCircle, Trophy, Server, Database, Shield, Wifi } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
+
+// Server boot loading overlay component
+const ServerBootOverlay = ({ onComplete }) => {
+    const [step, setStep] = useState(0);
+    const steps = [
+        { label: 'Waking up Render server…', icon: Server, detail: 'Free-tier cold boot detected' },
+        { label: 'Establishing database connection…', icon: Database, detail: 'PostgreSQL handshake' },
+        { label: 'Initializing user registration…', icon: Shield, detail: 'Validation & hashing' },
+        { label: 'Preparing your dashboard…', icon: Sparkles, detail: 'UrbanAI Engine ready' },
+        { label: 'Account created!', icon: CheckCircle, detail: 'Redirecting to login…' },
+    ];
+
+    useEffect(() => {
+        const timers = [];
+        steps.forEach((_, i) => {
+            timers.push(setTimeout(() => setStep(i), i * 1200));
+        });
+        timers.push(setTimeout(() => onComplete(), steps.length * 1200 + 600));
+        return () => timers.forEach(clearTimeout);
+    }, []);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-950 z-[999] flex items-center justify-center"
+        >
+            <div className="text-center max-w-md px-6">
+                <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mx-auto mb-8" />
+                <h2 className="text-white text-xl font-bold mb-2">Creating Your Account</h2>
+                <p className="text-slate-500 text-sm mb-8">This may take 15–30 seconds on first request (Render free-tier cold boot)</p>
+                <div className="space-y-3 text-left">
+                    {steps.map((s, i) => {
+                        const Icon = s.icon;
+                        return (
+                            <div key={i} className={`flex items-center gap-3 transition-all duration-500 ${i <= step ? 'opacity-100' : 'opacity-15'}`}>
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    {i < step ? (
+                                        <CheckCircle size={16} className="text-emerald-400" />
+                                    ) : i === step ? (
+                                        <div className="w-4 h-4 border-2 border-purple-400/40 border-t-purple-400 rounded-full animate-spin" />
+                                    ) : (
+                                        <div className="w-4 h-4 rounded-full border border-slate-600" />
+                                    )}
+                                </div>
+                                <div className="flex-1">
+                                    <div className={`text-sm font-semibold ${i <= step ? 'text-white' : 'text-slate-600'}`}>{s.label}</div>
+                                    <div className={`text-xs ${i <= step ? 'text-slate-400' : 'text-slate-700'}`}>{s.detail}</div>
+                                </div>
+                                {i < step && <span className="text-emerald-400 text-xs font-mono">✓</span>}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="mt-8 text-xs text-slate-600 flex items-center justify-center gap-2">
+                    <Wifi size={10} className="text-purple-400 animate-pulse" />
+                    Backend deployed on Render · Auto-scaling
+                </div>
+            </div>
+        </motion.div>
+    );
+};
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -11,6 +74,8 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showServerBoot, setShowServerBoot] = useState(false);
+    const [pendingSignup, setPendingSignup] = useState(null);
     const { signup, googleLogin } = useAuth();
     const navigate = useNavigate();
 
@@ -18,29 +83,41 @@ const Signup = () => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
+        setShowServerBoot(true);
+        const signupPromise = signup(name, email, password);
+        setPendingSignup(signupPromise);
+    };
 
-        const result = await signup(name, email, password);
-
-        if (result.success) {
-            navigate('/login');
+    const handleServerBootComplete = async () => {
+        if (pendingSignup) {
+            const result = await pendingSignup;
+            setShowServerBoot(false);
+            if (result.success) {
+                navigate('/login');
+            } else {
+                setError(result.error);
+            }
         } else {
-            setError(result.error);
+            setShowServerBoot(false);
         }
         setIsLoading(false);
+        setPendingSignup(null);
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
         setError('');
-        const result = await googleLogin(credentialResponse);
-        if (result.success) {
-            navigate('/dashboard');
-        } else {
-            setError(result.error);
-        }
+        setShowServerBoot(true);
+        const loginPromise = googleLogin(credentialResponse);
+        setPendingSignup(loginPromise);
     };
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Server Boot Overlay */}
+            <AnimatePresence>
+                {showServerBoot && <ServerBootOverlay onComplete={handleServerBootComplete} />}
+            </AnimatePresence>
+
             {/* Animated Background (Matching Home) */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -right-20 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-60 animate-pulse" />
