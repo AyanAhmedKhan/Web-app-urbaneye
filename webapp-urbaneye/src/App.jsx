@@ -17,6 +17,11 @@ import FieldOfficerDashboard from './components/Dashboard/FieldOfficerDashboard'
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import Chatbot from './components/Chatbot';
+import AICommandCenter from './pages/AICommandCenter';
+import SmartMeterDashboard from './pages/SmartMeterDashboard';
+import EmergencyMode from './pages/EmergencyMode';
+import SmartCityDevices from './pages/SmartCityDevices';
+import GovIntegration from './pages/GovIntegration';
 
 import AccessibilityToolbar from './components/AccessibilityToolbar';
 
@@ -110,6 +115,13 @@ function App() {
                         }
                     />
                 </Route>
+
+                {/* Static Feature Pages */}
+                <Route path="/ai-command-center" element={<AICommandCenter />} />
+                <Route path="/smart-meters" element={<SmartMeterDashboard />} />
+                <Route path="/emergency-mode" element={<EmergencyMode />} />
+                <Route path="/smart-city-devices" element={<SmartCityDevices />} />
+                <Route path="/gov-integration" element={<GovIntegration />} />
 
                 {/* Catch-all 404 */}
                 <Route path="*" element={<NotFound />} />

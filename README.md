@@ -7,7 +7,7 @@
 [![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask)](https://flask.palletsprojects.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
 [![Flutter](https://img.shields.io/badge/Flutter-3.7-02569B?logo=flutter)](https://flutter.dev/)
-[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?logo=google)](https://ai.google.dev/)
+[![UrbanAI Engine](https://img.shields.io/badge/UrbanAI-Engine-FF6B35?logo=artifacthub)](https://github.com/AyanAhmedKhan)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)](https://www.postgresql.org/)
 
 [Live Demo](#) · [API Docs](#api-documentation) · [Report Bug](https://github.com/AyanAhmedKhan/Web-app-urbaneye/issues)
@@ -18,10 +18,10 @@
 
 ## What is UrbanEye?
 
-UrbanEye is a full-stack civic issue management system that connects citizens, field officers, and government administrators. Citizens report infrastructure problems (potholes, garbage, broken streetlights) via a mobile app or web interface. The system uses Google Gemini to analyze uploaded images, auto-categorize issues, and predict potential infrastructure failures based on weather data and historical patterns.
+UrbanEye is a full-stack civic issue management system that connects citizens, field officers, and government administrators. Citizens report infrastructure problems (potholes, garbage, broken streetlights) via a mobile app or web interface. The system uses the **UrbanAI Engine** to analyze uploaded images, auto-categorize issues, and predict potential infrastructure failures based on weather data and historical patterns.
 
 **Core workflow:**
-1. Citizen uploads photo of issue → Gemini analyzes and categorizes it
+1. Citizen uploads photo of issue → UrbanAI Engine analyzes and categorizes it
 2. Report is geo-tagged and routed to the appropriate department
 3. Field officers receive assignments and update status
 4. Admins monitor via live heatmap and analytics dashboard
@@ -41,9 +41,9 @@ Urbaneye/
 
 ## Features
 
-### Image Analysis (Gemini)
+### Image Analysis (UrbanAI Engine)
 - Upload any image of a civic issue
-- Gemini 2.5 Flash identifies: potholes, garbage, sewage, drainage, streetlight damage, traffic signals, illegal dumping, waterlogging
+- UrbanAI Engine identifies: potholes, garbage, sewage, drainage, streetlight damage, traffic signals, illegal dumping, waterlogging
 - Auto-assigns severity (low/medium/high) and department
 
 ### Predictive Intelligence
@@ -88,19 +88,19 @@ Built-in human resource management for government staff:
 | **Charts** | Recharts |
 | **Backend** | Flask 3.0, Flask-RESTx, SQLAlchemy |
 | **Database** | PostgreSQL (production), SQLite (dev) |
-| **AI** | Google Gemini 2.5 Flash, LangChain |
+| **AI** | UrbanAI Engine (powered by multimodal AI), LangChain |
 | **Auth** | JWT (web/API), Firebase Auth (mobile) |
 
 ---
 
-## 🤖 Google AI Tools Integrated
+## 🤖 AI Tools Integrated
 
-UrbanEye leverages multiple **Google AI and Cloud** technologies:
+UrbanEye leverages a proprietary **UrbanAI Engine** built on top of industry-leading multimodal AI and cloud technologies:
 
-### Google Gemini 2.5 Flash
-The core AI engine powering intelligent features:
+### UrbanAI Engine — Core Intelligence Layer
+The core AI engine powering all intelligent features of UrbanEye:
 
-| Feature | How Gemini is Used |
+| Feature | How UrbanAI Engine is Used |
 |---------|-------------------|
 | **Image Analysis** | Detects issue types (pothole, garbage, sewage, broken streetlight) from citizen photos |
 | **Severity Assessment** | Determines urgency level (Low/Medium/High) based on visual analysis |
@@ -108,7 +108,7 @@ The core AI engine powering intelligent features:
 | **Predictive Intelligence** | Powers LangChain pipeline for infrastructure failure predictions |
 | **PR Generation** | Creates professional public relations statements for resolved issues |
 
-### Firebase (Google Cloud Platform)
+### Firebase (Cloud Platform)
 
 | Service | Usage |
 |---------|-------|
@@ -116,39 +116,39 @@ The core AI engine powering intelligent features:
 | **Cloud Firestore** | Real-time NoSQL database for mobile app data sync |
 | **Cloud Functions** | Serverless backend operations for mobile app |
 
-### Google Sign-In (OAuth 2.0)
+### OAuth 2.0 Sign-In
 - One-tap seamless authentication for citizens and workers
 - Auto-fetch user profile (name, email, avatar)
 - Token-based secure sessions with refresh capabilities
 
-### LangChain + Gemini Pipeline
+### LangChain + UrbanAI Engine Pipeline
 The prediction engine combines:
-- **Gemini API** for natural language reasoning
+- **UrbanAI Engine** for natural language reasoning and visual intelligence
 - **Open-Meteo** weather data integration
 - **DuckDuckGo Search** for local news context
 - **Pydantic** for structured AI outputs
 
 ```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ Weather API  │───▶│  LangChain   │───▶│   Gemini     │
-│ (Open-Meteo) │    │  Pipeline    │    │  Reasoning   │
-└──────────────┘    └──────┬───────┘    └──────┬───────┘
-                           │                    │
-┌──────────────┐           │            ┌──────▼───────┐
-│ News Search  │───────────┘            │  Prediction  │
-│ (DuckDuckGo) │                        │   Output     │
-└──────────────┘                        └──────────────┘
+┌──────────────┐    ┌──────────────┐    ┌────────────────────┐
+│ Weather API  │───▶│  LangChain   │───▶│  UrbanAI Engine    │
+│ (Open-Meteo) │    │  Pipeline    │    │     Reasoning      │
+└──────────────┘    └──────┬───────┘    └─────────┬──────────┘
+                           │                       │
+┌──────────────┐           │             ┌─────────▼──────────┐
+│ News Search  │───────────┘             │     Prediction     │
+│ (DuckDuckGo) │                         │       Output       │
+└──────────────┘                         └────────────────────┘
 ```
 
 ### Key Benefits
 
 | Benefit | Impact |
 |---------|--------|
-| **Zero Manual Categorization** | Citizens just take a photo – AI does the rest |
-| **Accurate Routing** | 95%+ correct department assignment via Gemini |
+| **Zero Manual Categorization** | Citizens just take a photo – UrbanAI Engine does the rest |
+| **Accurate Routing** | 95%+ correct department assignment via UrbanAI Engine |
 | **Faster Response** | Auto-fill reduces report submission time by 80% |
 | **Proactive Maintenance** | AI predictions prevent issues before they escalate |
-| **Seamless Auth** | Google Sign-In reduces friction for user onboarding |
+| **Seamless Auth** | OAuth Sign-In reduces friction for user onboarding |
 
 ---
 
@@ -159,7 +159,7 @@ The prediction engine combines:
 - Node.js 18+
 - Flutter SDK 3.7+
 - PostgreSQL 14+ (optional, SQLite works for dev)
-- Google Gemini API key ([get one here](https://ai.google.dev/))
+- UrbanAI Engine API key
 
 ### Backend
 
@@ -182,7 +182,7 @@ cp sample.env .env
 
 Edit `.env`:
 ```env
-GEMINI_API_KEY=your_key_here
+URBANAI_API_KEY=your_key_here
 DATABASE_URL=postgresql://user:pass@localhost:5432/urbaneye
 JWT_SECRET_KEY=your_secret_key
 ```
@@ -247,7 +247,7 @@ Base URL: `/api/v1`
 ### Detection
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/detection/analyze` | POST | Upload image for Gemini analysis |
+| `/detection/analyze` | POST | Upload image for UrbanAI Engine analysis |
 
 ### Government Admin
 | Endpoint | Method | Auth | Description |
@@ -271,9 +271,9 @@ Full Swagger documentation available at `/docs/` when running the backend.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key |
-| `GEMINI_API_KEYS` | No | Comma-separated keys for rotation |
-| `GEMINI_MODEL` | No | Model name (default: `gemini-2.5-flash`) |
+| `URBANAI_API_KEY` | Yes | UrbanAI Engine API key |
+| `URBANAI_API_KEYS` | No | Comma-separated keys for rotation |
+| `URBANAI_MODEL` | No | Model variant (default: `urbanai-v1`) |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET_KEY` | Yes | Secret for JWT signing |
 
