@@ -1,75 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Eye, Lock, Mail, ArrowRight, Loader2, Activity, Sparkles, CheckCircle, Server, Wifi, Shield, Database, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
-
-// Server boot loading overlay component
-const ServerBootOverlay = ({ onComplete }) => {
-    const [step, setStep] = useState(0);
-    const steps = [
-        { label: 'Waking up Render server…', icon: Server, detail: 'Free-tier cold boot detected' },
-        { label: 'Establishing database connection…', icon: Database, detail: 'PostgreSQL handshake' },
-        { label: 'Loading authentication module…', icon: Shield, detail: 'JWT + RBAC initializing' },
-        { label: 'Connecting to UrbanAI Engine…', icon: Sparkles, detail: 'Multimodal AI pipeline' },
-        { label: 'Server ready!', icon: CheckCircle, detail: 'All systems operational' },
-    ];
-
-    useEffect(() => {
-        const timers = [];
-        steps.forEach((_, i) => {
-            timers.push(setTimeout(() => setStep(i), i * 1200));
-        });
-        timers.push(setTimeout(() => onComplete(), steps.length * 1200 + 600));
-        return () => timers.forEach(clearTimeout);
-    }, []);
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-950 z-[999] flex items-center justify-center"
-        >
-            <div className="text-center max-w-md px-6">
-                <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin mx-auto mb-8" />
-                <h2 className="text-white text-xl font-bold mb-2">Starting UrbanEye Server</h2>
-                <p className="text-slate-500 text-sm mb-8">This may take 15–30 seconds on first request (Render free-tier cold boot)</p>
-                <div className="space-y-3 text-left">
-                    {steps.map((s, i) => {
-                        const Icon = s.icon;
-                        return (
-                            <div
-                                key={i}
-                                className={`flex items-center gap-3 transition-all duration-500 ${i <= step ? 'opacity-100' : 'opacity-15'}`}
-                            >
-                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    {i < step ? (
-                                        <CheckCircle size={16} className="text-emerald-400" />
-                                    ) : i === step ? (
-                                        <div className="w-4 h-4 border-2 border-indigo-400/40 border-t-indigo-400 rounded-full animate-spin" />
-                                    ) : (
-                                        <div className="w-4 h-4 rounded-full border border-slate-600" />
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <div className={`text-sm font-semibold ${i <= step ? 'text-white' : 'text-slate-600'}`}>{s.label}</div>
-                                    <div className={`text-xs ${i <= step ? 'text-slate-400' : 'text-slate-700'}`}>{s.detail}</div>
-                                </div>
-                                {i < step && <span className="text-emerald-400 text-xs font-mono">✓</span>}
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className="mt-8 text-xs text-slate-600 flex items-center justify-center gap-2">
-                    <Wifi size={10} className="text-indigo-400 animate-pulse" />
-                    Backend deployed on Render · Auto-scaling
-                </div>
-            </div>
-        </motion.div>
-    );
-};
 
 const demoCredentials = [
     { role: 'Gov Admin', email: 'admin@gov.in', password: 'ayankhan', color: 'bg-red-100 text-red-600', desc: 'Full analytics, AI predictions, heatmap' },
@@ -86,15 +20,22 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showServerBoot, setShowServerBoot] = useState(false);
-    const [pendingLogin, setPendingLogin] = useState(null);
+    const [slowRequest, setSlowRequest] = useState(false);
     const [showAllCreds, setShowAllCreds] = useState(false);
+    const slowTimerRef = useRef(null);
 
     const { login, googleLogin, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
     const from = location.state?.from?.pathname || '/dashboard';
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+        };
+    }, []);
 
     // Google One Tap Login
     useGoogleOneTapLogin({
@@ -112,51 +53,55 @@ const Login = () => {
         disabled: isAuthenticated(),
     });
 
+    const startSlowTimer = () => {
+        slowTimerRef.current = setTimeout(() => setSlowRequest(true), 3000);
+    };
+
+    const clearSlowTimer = () => {
+        if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+        slowTimerRef.current = null;
+        setSlowRequest(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setError('');
+        setSlowRequest(false);
+        startSlowTimer();
 
-        // Show server boot animation immediately
-        setShowServerBoot(true);
-
-        // Start login in background — the overlay will dismiss on its own timeline
-        const loginPromise = login(email, password);
-        setPendingLogin(loginPromise);
-    };
-
-    const handleServerBootComplete = async () => {
-        if (pendingLogin) {
-            const result = await pendingLogin;
-            setShowServerBoot(false);
-            if (result.success) {
-                navigate(from, { replace: true });
-            } else {
-                setError(result.error);
-            }
-        } else {
-            setShowServerBoot(false);
-        }
+        const result = await login(email, password);
+        clearSlowTimer();
         setIsSubmitting(false);
-        setPendingLogin(null);
+
+        if (result.success) {
+            navigate(from, { replace: true });
+        } else {
+            setError(result.error);
+        }
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
         setError('');
-        setShowServerBoot(true);
-        const loginPromise = googleLogin(credentialResponse);
-        setPendingLogin(loginPromise);
+        setIsSubmitting(true);
+        setSlowRequest(false);
+        startSlowTimer();
+
+        const result = await googleLogin(credentialResponse);
+        clearSlowTimer();
+        setIsSubmitting(false);
+
+        if (result.success) {
+            navigate(from, { replace: true });
+        } else {
+            setError(result.error);
+        }
     };
 
     const visibleCreds = showAllCreds ? demoCredentials : demoCredentials.slice(0, 3);
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Server Boot Overlay */}
-            <AnimatePresence>
-                {showServerBoot && <ServerBootOverlay onComplete={handleServerBootComplete} />}
-            </AnimatePresence>
-
             {/* Animated Background (Matching Home) */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-60 animate-pulse" />
@@ -302,7 +247,7 @@ const Login = () => {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="animate-spin" size={20} />
-                                        <span>Connecting…</span>
+                                        <span>Signing in…</span>
                                     </>
                                 ) : (
                                     <>
@@ -311,6 +256,26 @@ const Login = () => {
                                     </>
                                 )}
                             </button>
+
+                            {/* Render cold-boot inline message */}
+                            <AnimatePresence>
+                                {isSubmitting && slowRequest && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 flex items-start gap-3">
+                                            <div className="w-5 h-5 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin mt-0.5 shrink-0" />
+                                            <div>
+                                                <p className="text-sm font-semibold text-indigo-700">Render server is waking up…</p>
+                                                <p className="text-xs text-indigo-500 mt-0.5">Free-tier cold boot — usually takes 15–30s on first request</p>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </form>
 
                         {/* Demo Credentials - All Roles */}
