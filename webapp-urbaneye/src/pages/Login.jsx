@@ -24,11 +24,25 @@ const Login = () => {
     const [showAllCreds, setShowAllCreds] = useState(false);
     const slowTimerRef = useRef(null);
 
-    const { login, googleLogin, isAuthenticated } = useAuth();
+    const { login, googleLogin, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
     const from = location.state?.from?.pathname || '/dashboard';
+
+    // Role-based redirect helper — go directly to the correct dashboard
+    const getRedirectPath = (userData) => {
+        // If we have a saved "from" path that isn't the generic dashboard, use it
+        if (from !== '/dashboard') return from;
+        // Otherwise route by role to avoid intermediate redirect hops
+        switch (userData?.role) {
+            case 'super_admin': return '/super-admin-dashboard';
+            case 'gov_admin': return '/gov-admin-dashboard';
+            case 'dept_head': return '/dept-head-dashboard';
+            case 'field_officer': return '/field-officer-dashboard';
+            default: return '/dashboard';
+        }
+    };
 
     // Cleanup timer on unmount
     useEffect(() => {
@@ -75,7 +89,7 @@ const Login = () => {
         setIsSubmitting(false);
 
         if (result.success) {
-            navigate(from, { replace: true });
+            navigate(getRedirectPath(result.user), { replace: true });
         } else {
             setError(result.error);
         }
@@ -92,7 +106,7 @@ const Login = () => {
         setIsSubmitting(false);
 
         if (result.success) {
-            navigate(from, { replace: true });
+            navigate(getRedirectPath(result.user), { replace: true });
         } else {
             setError(result.error);
         }

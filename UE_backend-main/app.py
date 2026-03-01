@@ -1494,14 +1494,22 @@ class HRPayroll(Resource):
 class GovStaff(Resource):
     @jwt_required()
     def get(self):
-        """Get all department heads and field officers (Gov Admin Only)"""
+        """Get all department heads and field officers (Gov Admin / Dept Head)"""
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
         
-        if not user or user.role != 'gov_admin':
-            return {'message': 'Unauthorized. Gov Admin access required.'}, 403
+        if not user or user.role not in ['gov_admin', 'dept_head', 'super_admin']:
+            return {'message': 'Unauthorized. Gov Admin or Dept Head access required.'}, 403
+        
+        if user.role == 'dept_head':
+            # Dept heads only see field officers in their department
+            staff = User.query.filter(
+                User.role == 'field_officer',
+                User.department == user.department
+            ).order_by(User.created_at.desc()).all()
+        else:
+            staff = User.query.filter(User.role.in_(['dept_head', 'field_officer'])).order_by(User.created_at.desc()).all()
             
-        staff = User.query.filter(User.role.in_(['dept_head', 'field_officer'])).order_by(User.created_at.desc()).all()
         return {
             'success': True,
             'staff': [u.to_dict() for u in staff],

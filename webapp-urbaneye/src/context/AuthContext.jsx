@@ -41,10 +41,11 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', access_token);
             localStorage.setItem('user_data', JSON.stringify(userData));
 
+            const mergedUser = { ...jwtDecode(access_token), ...userData };
             setToken(access_token);
-            setUser({ ...jwtDecode(access_token), ...userData });
+            setUser(mergedUser);
 
-            return { success: true };
+            return { success: true, user: mergedUser };
         } catch (error) {
             console.error('Login failed:', error);
             return {
@@ -67,10 +68,11 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', access_token);
             localStorage.setItem('user_data', JSON.stringify(userData));
 
+            const mergedUser = { ...jwtDecode(access_token), ...userData };
             setToken(access_token);
-            setUser({ ...jwtDecode(access_token), ...userData });
+            setUser(mergedUser);
 
-            return { success: true };
+            return { success: true, user: mergedUser };
         } catch (error) {
             console.error('Google login failed:', error);
             return {
