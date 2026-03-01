@@ -505,14 +505,7 @@ const CivilianDashboard = ({ user }) => {
         { id: 'settings', label: 'Settings', icon: Settings },
     ];
 
-    const smartCityLinks = [
-        { label: 'AI Command Center', icon: Brain, route: '/ai-command-center' },
-        { label: 'Electricity Dept', icon: Zap, route: '/electricity' },
-        { label: 'Gas Department', icon: Flame, route: '/gas' },
-        { label: 'Smart Meters', icon: Gauge, route: '/smart-meters' },
-        { label: 'Emergency Mode', icon: AlertOctagon, route: '/emergency-mode' },
-        { label: 'IoT Devices', icon: Wifi, route: '/smart-city-devices' },
-    ];
+
 
     return (
         <div className="flex min-h-screen bg-[#f8fafc] font-sans antialiased text-slate-900 overflow-hidden">
@@ -538,24 +531,6 @@ const CivilianDashboard = ({ user }) => {
                         </button>
                     ))}
 
-                    {/* Smart City Platform */}
-                    <div className={`mt-4 pt-4 border-t border-slate-100 ${sidebarCollapsed ? 'px-0' : 'px-0'}`}>
-                        {!sidebarCollapsed && (
-                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-3 px-4">Smart City</p>
-                        )}
-                        <div className="flex flex-col gap-1">
-                            {smartCityLinks.map(link => (
-                                <button
-                                    key={link.route}
-                                    onClick={() => navigate(link.route)}
-                                    className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-all"
-                                >
-                                    <link.icon size={20} className="text-slate-300" />
-                                    {!sidebarCollapsed && <span>{link.label}</span>}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
                 </nav>
 
                 <div className="p-4 border-t border-slate-50">

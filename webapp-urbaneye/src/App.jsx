@@ -118,14 +118,63 @@ function App() {
                     />
                 </Route>
 
-                {/* Static Feature Pages */}
-                <Route path="/ai-command-center" element={<AICommandCenter />} />
-                <Route path="/smart-meters" element={<SmartMeterDashboard />} />
-                <Route path="/emergency-mode" element={<EmergencyMode />} />
-                <Route path="/smart-city-devices" element={<SmartCityDevices />} />
-                <Route path="/gov-integration" element={<GovIntegration />} />
-                <Route path="/electricity" element={<ElectricityDepartment />} />
-                <Route path="/gas" element={<GasDepartment />} />
+                {/* Protected Feature Pages - Login required */}
+                <Route
+                    path="/ai-command-center"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <AICommandCenter />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/smart-meters"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <SmartMeterDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/emergency-mode"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <EmergencyMode />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/smart-city-devices"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <SmartCityDevices />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/gov-integration"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <GovIntegration />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/electricity"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <ElectricityDepartment />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/gas"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <GasDepartment />
+                        </ProtectedRoute>
+                    }
+                />
 
                 {/* Catch-all 404 */}
                 <Route path="*" element={<NotFound />} />
