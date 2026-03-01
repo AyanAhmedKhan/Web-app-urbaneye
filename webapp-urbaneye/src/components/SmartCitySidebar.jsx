@@ -1,16 +1,16 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Brain, Zap, Flame, Gauge, AlertOctagon, Wifi, Link2, ChevronLeft, ChevronRight, Home, LayoutDashboard, Building, LogOut, Menu, X } from 'lucide-react';
+import { Brain, Zap, Flame, Gauge, AlertOctagon, Wifi, Link2, ChevronLeft, ChevronRight, Home, LogOut, Menu, X, Building2 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const links = [
-    { label: 'AI Command Center', icon: Brain, route: '/ai-command-center', color: 'from-purple-600 to-indigo-700' },
-    { label: 'Electricity Dept', icon: Zap, route: '/electricity', color: 'from-amber-400 to-yellow-600' },
-    { label: 'Gas Department', icon: Flame, route: '/gas', color: 'from-orange-500 to-red-600' },
-    { label: 'Smart Meters', icon: Gauge, route: '/smart-meters', color: 'from-amber-500 to-orange-600' },
-    { label: 'Emergency Mode', icon: AlertOctagon, route: '/emergency-mode', color: 'from-red-500 to-rose-700' },
-    { label: 'IoT Devices', icon: Wifi, route: '/smart-city-devices', color: 'from-cyan-500 to-blue-600' },
-    { label: 'Govt Integration', icon: Link2, route: '/gov-integration', color: 'from-indigo-500 to-blue-700' },
+    { label: 'AI Command Center', icon: Brain, route: '/ai-command-center', accent: '#6366f1' },
+    { label: 'Electricity Dept', icon: Zap, route: '/electricity', accent: '#eab308' },
+    { label: 'Gas Department', icon: Flame, route: '/gas', accent: '#f97316' },
+    { label: 'Smart Meters', icon: Gauge, route: '/smart-meters', accent: '#8b5cf6' },
+    { label: 'Emergency Mode', icon: AlertOctagon, route: '/emergency-mode', accent: '#ef4444' },
+    { label: 'IoT Devices', icon: Wifi, route: '/smart-city-devices', accent: '#06b6d4' },
+    { label: 'Govt Integration', icon: Link2, route: '/gov-integration', accent: '#3b82f6' },
 ];
 
 const SmartCitySidebar = ({ children }) => {
@@ -18,151 +18,228 @@ const SmartCitySidebar = ({ children }) => {
     const location = useLocation();
     const { user, logout } = useAuth();
     const [collapsed, setCollapsed] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
+    const sidebarWidth = collapsed ? 72 : 260;
+
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-950">
-            {/* Mobile Menu Button */}
+        <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#f8fafc' }}>
+            {/* Mobile toggle */}
             <button
-                className="lg:hidden fixed top-4 left-4 z-[1000] p-3 bg-slate-800 border-none rounded-lg text-white cursor-pointer hover:bg-slate-700 transition-colors"
-                onClick={() => setMobileMenuOpen(true)}
+                onClick={() => setMobileOpen(true)}
+                style={{
+                    display: 'none', position: 'fixed', top: 16, left: 16, zIndex: 1100,
+                    width: 44, height: 44, borderRadius: 10, border: '1px solid #e2e8f0',
+                    background: '#fff', cursor: 'pointer', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 1px 3px rgba(0,0,0,.08)',
+                }}
+                className="smart-city-mobile-toggle"
             >
-                <Menu size={24} />
+                <Menu size={20} color="#334155" />
             </button>
 
-            {/* Mobile Overlay */}
-            {mobileMenuOpen && (
+            {/* Overlay */}
+            {mobileOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[900]"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => setMobileOpen(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.2)', zIndex: 1050, backdropFilter: 'blur(2px)' }}
+                    className="smart-city-overlay"
                 />
             )}
 
             {/* Sidebar */}
-            <aside className={`
-                ${collapsed ? 'w-20' : 'w-72'}
-                ${collapsed ? 'min-w-[80px]' : 'min-w-[288px]'}
-                bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
-                flex flex-col transition-all duration-300 ease-in-out relative z-[100]
-                shadow-2xl shadow-slate-900/50
-                ${mobileMenuOpen ? 'fixed inset-y-0 left-0 z-[950]' : 'max-lg:hidden'}
-            `}>
-                {/* Brand Header */}
-                <div className="flex items-center gap-3 p-6 mb-2 border-b border-white/10">
-                    <div className="w-12 h-12 min-w-[48px] bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
-                        <Building size={collapsed ? 22 : 28} className="drop-shadow-sm" />
+            <nav
+                style={{
+                    width: sidebarWidth,
+                    minWidth: sidebarWidth,
+                    height: '100vh',
+                    background: '#ffffff',
+                    borderRight: '1px solid #f1f5f9',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'width .25s ease, min-width .25s ease',
+                    position: mobileOpen ? 'fixed' : 'relative',
+                    zIndex: mobileOpen ? 1060 : 10,
+                    boxShadow: mobileOpen ? '4px 0 24px rgba(0,0,0,.08)' : 'none',
+                }}
+                className={mobileOpen ? '' : 'smart-city-sidebar-desktop'}
+            >
+                {/* Header */}
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: collapsed ? '20px 16px' : '20px 20px',
+                    borderBottom: '1px solid #f1f5f9',
+                }}>
+                    <div style={{
+                        width: 36, height: 36, minWidth: 36, borderRadius: 10,
+                        background: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                        <Building2 size={18} color="#fff" />
                     </div>
                     {!collapsed && (
-                        <div className="flex flex-col overflow-hidden">
-                            <span className="font-extrabold text-2xl text-white tracking-tight whitespace-nowrap">UrbanEye</span>
-                            <span className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Smart City</span>
+                        <div style={{ overflow: 'hidden' }}>
+                            <div style={{ fontWeight: 700, fontSize: 16, color: '#0f172a', letterSpacing: '-.02em', lineHeight: 1.2 }}>UrbanEye</div>
+                            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500, letterSpacing: '.04em', textTransform: 'uppercase' }}>Smart City</div>
                         </div>
                     )}
-                    <button
-                        className="lg:hidden ml-auto bg-white/5 border-none p-2 rounded-lg text-slate-400 cursor-pointer hover:text-white hover:bg-white/10 transition-all"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                {/* Collapse Toggle */}
-                <button
-                    className="hidden lg:flex items-center justify-center w-full p-2 mb-4 bg-white/5 border-none rounded-lg text-slate-400 cursor-pointer transition-all hover:bg-white/10 hover:text-white"
-                    onClick={() => setCollapsed(!collapsed)}
-                >
-                    {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-                </button>
-
-                {/* Back to Dashboard */}
-                <div className="px-3 mb-2">
-                    <button
-                        onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
-                        className={`
-                            flex items-center gap-3 w-full px-4 py-3 border-none rounded-lg font-medium cursor-pointer transition-all text-left whitespace-nowrap
-                            ${collapsed ? 'justify-center px-3.5' : ''}
-                            bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white
-                        `}
-                        title={collapsed ? 'Back to Dashboard' : ''}
-                    >
-                        <Home size={20} className="flex-shrink-0" />
-                        {!collapsed && <span>Dashboard</span>}
-                    </button>
-                </div>
-
-                {/* Section Label */}
-                <div className="px-6 pt-2 pb-1">
-                    {!collapsed && (
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Platform</p>
+                    {mobileOpen && (
+                        <button
+                            onClick={() => setMobileOpen(false)}
+                            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#94a3b8' }}
+                        >
+                            <X size={18} />
+                        </button>
                     )}
                 </div>
 
-                {/* Nav Links */}
-                <nav className="flex-1 flex flex-col gap-1.5 px-3 overflow-y-auto">
+                {/* Dashboard link */}
+                <div style={{ padding: '12px 12px 4px' }}>
+                    <button
+                        onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                            padding: collapsed ? '10px 0' : '10px 12px',
+                            justifyContent: collapsed ? 'center' : 'flex-start',
+                            border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13,
+                            fontWeight: 500, color: '#64748b', background: '#f8fafc',
+                            transition: 'background .15s, color .15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#334155'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}
+                        title={collapsed ? 'Dashboard' : ''}
+                    >
+                        <Home size={18} />
+                        {!collapsed && 'Dashboard'}
+                    </button>
+                </div>
+
+                {/* Section label */}
+                {!collapsed && (
+                    <div style={{ padding: '14px 24px 6px', fontSize: 10, fontWeight: 600, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '.08em' }}>
+                        Platform
+                    </div>
+                )}
+
+                {/* Nav links */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '4px 12px', display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {links.map(link => {
                         const isActive = location.pathname === link.route;
                         return (
                             <button
                                 key={link.route}
-                                onClick={() => { navigate(link.route); setMobileMenuOpen(false); }}
-                                className={`
-                                    flex items-center gap-3 px-4 py-3 border-none rounded-lg font-medium cursor-pointer transition-all text-left whitespace-nowrap w-full
-                                    ${collapsed ? 'justify-center px-3.5' : ''}
-                                    ${isActive
-                                        ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/5 text-indigo-400 border-l-4 border-indigo-500'
-                                        : 'bg-transparent text-slate-400 hover:bg-white/5 hover:text-white'
-                                    }
-                                `}
+                                onClick={() => { navigate(link.route); setMobileOpen(false); }}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: 10,
+                                    padding: collapsed ? '10px 0' : '10px 12px',
+                                    justifyContent: collapsed ? 'center' : 'flex-start',
+                                    border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13,
+                                    fontWeight: isActive ? 600 : 500, width: '100%', textAlign: 'left',
+                                    color: isActive ? link.accent : '#64748b',
+                                    background: isActive ? `${link.accent}0d` : 'transparent',
+                                    borderLeft: isActive ? `3px solid ${link.accent}` : '3px solid transparent',
+                                    transition: 'all .15s ease',
+                                }}
+                                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#334155'; } }}
+                                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; } }}
                                 title={collapsed ? link.label : ''}
                             >
-                                <div className={`w-8 h-8 min-w-[32px] bg-gradient-to-br ${link.color} rounded-lg flex items-center justify-center flex-shrink-0 shadow-md`}>
-                                    <link.icon size={16} className="text-white" />
+                                <div style={{
+                                    width: 32, height: 32, minWidth: 32, borderRadius: 8,
+                                    background: isActive ? `${link.accent}18` : '#f8fafc',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    transition: 'background .15s',
+                                }}>
+                                    <link.icon size={16} color={isActive ? link.accent : '#94a3b8'} />
                                 </div>
                                 {!collapsed && (
-                                    <>
-                                        <span className="flex-1">{link.label}</span>
-                                        {isActive && (
-                                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                                        )}
-                                    </>
+                                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {link.label}
+                                    </span>
+                                )}
+                                {isActive && !collapsed && (
+                                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: link.accent, flexShrink: 0 }} />
                                 )}
                             </button>
                         );
                     })}
-                </nav>
+                </div>
 
-                {/* User Info + Logout */}
-                <div className={`border-t border-white/10 p-4 mt-auto flex items-center gap-3 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+                {/* Collapse toggle — desktop only */}
+                <div style={{ padding: '8px 12px', borderTop: '1px solid #f1f5f9' }} className="smart-city-sidebar-desktop-only">
+                    <button
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                            width: '100%', padding: '8px 0', border: 'none', borderRadius: 6,
+                            cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                            color: '#94a3b8', background: '#f8fafc',
+                            transition: 'background .15s, color .15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#94a3b8'; }}
+                    >
+                        {collapsed ? <ChevronRight size={14} /> : <><ChevronLeft size={14} /> Collapse</>}
+                    </button>
+                </div>
+
+                {/* User footer */}
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: collapsed ? '16px 12px' : '16px 16px',
+                    borderTop: '1px solid #f1f5f9',
+                    justifyContent: collapsed ? 'center' : 'flex-start',
+                }}>
                     {!collapsed && (
-                        <div className="flex items-center gap-3 flex-1 overflow-hidden">
-                            <div className="w-9 h-9 min-w-[36px] bg-gradient-to-br from-indigo-500 to-purple-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                {user?.name?.charAt(0) || 'U'}
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {user?.name || 'User'}
                             </div>
-                            <div className="flex flex-col overflow-hidden">
-                                <span className="text-white font-semibold text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">{user?.name || 'User'}</span>
-                                <span className="text-slate-400 text-xs capitalize">{user?.role?.replace('_', ' ') || 'Smart City'}</span>
+                            <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'capitalize' }}>
+                                {user?.role?.replace(/_/g, ' ') || 'Smart City'}
                             </div>
                         </div>
                     )}
                     <button
-                        className="w-9 h-9 min-w-[36px] bg-red-500/10 border-none rounded-lg text-red-500 cursor-pointer flex items-center justify-center hover:bg-red-500/20 transition-colors"
                         onClick={handleLogout}
+                        style={{
+                            width: 34, height: 34, minWidth: 34, borderRadius: 8, border: 'none',
+                            background: '#fef2f2', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'background .15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; }}
                         title="Logout"
                     >
-                        <LogOut size={18} />
+                        <LogOut size={15} color="#ef4444" />
                     </button>
                 </div>
-            </aside>
+            </nav>
 
-            {/* Page Content */}
-            <main className="flex-1 overflow-y-auto">
+            {/* Main content */}
+            <main style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
                 {children}
             </main>
+
+            {/* Responsive CSS */}
+            <style>{`
+                @media (max-width: 1023px) {
+                    .smart-city-sidebar-desktop { display: none !important; }
+                    .smart-city-mobile-toggle { display: flex !important; }
+                }
+                @media (min-width: 1024px) {
+                    .smart-city-sidebar-desktop-only { display: block; }
+                    .smart-city-mobile-toggle { display: none !important; }
+                }
+                @media (max-width: 1023px) {
+                    .smart-city-sidebar-desktop-only { display: none; }
+                }
+            `}</style>
         </div>
     );
 };
