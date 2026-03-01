@@ -6,11 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 
 const demoCredentials = [
+    { role: 'Civilian', email: 'ayan.ahmedkhan591@gmail.com', password: 'ayankhan', color: 'bg-blue-100 text-blue-600', desc: 'Report issues, track status' },
     { role: 'Gov Admin', email: 'admin@gov.in', password: 'ayankhan', color: 'bg-red-100 text-red-600', desc: 'Full analytics, AI predictions, heatmap' },
     { role: 'Super Admin', email: 'ayanpthan768@gmail.com', password: 'ayankhan', color: 'bg-purple-100 text-purple-600', desc: 'System configuration, user management' },
     { role: 'Dept Head', email: 'depthead@roads.gov.in', password: 'ayankhan', color: 'bg-amber-100 text-amber-600', desc: 'Department reports, team management' },
     { role: 'Field Officer', email: 'vikash@mcd.gov.in', password: 'ayankhan', color: 'bg-teal-100 text-teal-600', desc: 'Task assignments, on-ground updates' },
-    { role: 'Civilian', email: 'ayan.ahmedkhan591@gmail.com', password: 'ayankhan', color: 'bg-blue-100 text-blue-600', desc: 'Report issues, track status' },
     { role: 'Gig Worker', email: 'gig@urbaneye.in', password: 'ayankhan', color: 'bg-orange-100 text-orange-600', desc: 'On-demand task pickup, earnings' },
     { role: 'Social Worker', email: 'ngo@urbaneye.in', password: 'ayankhan', color: 'bg-pink-100 text-pink-600', desc: 'NGO collaboration, social issues' },
 ];
