@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Activity, Map, Upload, Sparkles, Shield, Users, Trophy, Star, ChevronRight, Play, CheckCircle, Zap, Building, MapPin, Download, Smartphone, Eye } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { ArrowRight, Activity, Map, Upload, Sparkles, Shield, Users, Trophy, Star, ChevronRight, Play, CheckCircle, Zap, Building, MapPin, Download, Smartphone, Eye, Brain, Flame, Wifi, Link2, AlertOctagon, Gauge } from 'lucide-react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import axios from 'axios';
 import { ContainerScroll } from '../components/ui/ContainerScrollAnimation';
@@ -109,7 +109,41 @@ const Home = () => {
             title: "Express Resolution",
             description: "Need it fixed fast? Book a verified gig worker for immediate on-ground resolution.",
             color: "from-amber-500 to-orange-600"
-        }
+        },
+        {
+            icon: Brain,
+            title: "AI Command Center",
+            description: "Predictive infrastructure intelligence correlates weather, history, and live data to flag risks before they happen.",
+            color: "from-purple-600 to-indigo-700"
+        },
+        {
+            icon: AlertOctagon,
+            title: "Emergency Mode",
+            description: "During storms or disasters, the system auto-escalates critical hazards and pushes alerts to all departments instantly.",
+            color: "from-red-500 to-rose-600"
+        },
+        {
+            icon: Gauge,
+            title: "Smart Meter Monitor",
+            description: "Live consumption monitoring with anomaly detection and theft flagging across all utility distribution points.",
+            color: "from-amber-500 to-yellow-600"
+        },
+        {
+            icon: Wifi,
+            title: "Smart City IoT",
+            description: "Unified registry of street sensors, cameras, waste monitors, and flood detectors across all wards.",
+            color: "from-cyan-500 to-blue-600"
+        },
+    ];
+
+    const departments = [
+        { label: 'AI Command Center', sub: 'Predictive analytics', icon: Brain, color: 'from-purple-600 to-indigo-700', route: '/ai-command-center', badge: 'Live' },
+        { label: 'Electricity Dept', sub: 'Delhi grid monitoring', icon: Zap, color: 'from-amber-400 to-yellow-600', route: '/electricity', badge: 'Live' },
+        { label: 'Gas Department', sub: 'IGL pipeline safety', icon: Flame, color: 'from-orange-500 to-red-600', route: '/gas', badge: 'Live' },
+        { label: 'Smart Meters', sub: 'Anomaly & theft detection', icon: Gauge, color: 'from-amber-500 to-orange-600', route: '/smart-meters', badge: 'Live' },
+        { label: 'Emergency Mode', sub: 'Disaster response', icon: AlertOctagon, color: 'from-red-500 to-rose-700', route: '/emergency-mode', badge: 'Standby' },
+        { label: 'Smart City Devices', sub: 'IoT device registry', icon: Wifi, color: 'from-cyan-500 to-blue-600', route: '/smart-city-devices', badge: 'Live' },
+        { label: 'Govt Integration', sub: 'ERP, NIC & ICCC', icon: Link2, color: 'from-indigo-500 to-blue-700', route: '/gov-integration', badge: 'Connected' },
     ];
 
     return (
@@ -316,6 +350,62 @@ const Home = () => {
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-800 mb-3">{feature.title}</h3>
                                 <p className="text-slate-500 leading-relaxed">{feature.description}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Smart City Platform Departments Section */}
+            <section className="py-24 bg-slate-950">
+                <div className="max-w-7xl mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-14"
+                    >
+                        <span className="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full text-sm font-bold mb-4 border border-purple-500/20">
+                            <Sparkles size={14} /> Smart City Platform
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                            Live Command Centers
+                        </h2>
+                        <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+                            Real-time monitoring, predictive intelligence, and emergency response — all connected in one platform across Delhi NCR.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {departments.map((dept, i) => (
+                            <motion.div
+                                key={dept.route}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: i * 0.07 }}
+                                viewport={{ once: true }}
+                            >
+                                <Link to={dept.route}
+                                    className="group flex flex-col h-full bg-slate-900 rounded-2xl border border-white/5 hover:border-white/20 p-6 hover:-translate-y-1 transition-all duration-300"
+                                >
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className={`w-12 h-12 bg-gradient-to-br ${dept.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                                            <dept.icon size={22} className="text-white" />
+                                        </div>
+                                        <span className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                            {dept.badge}
+                                        </span>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-white text-lg mb-1">{dept.label}</h3>
+                                        <p className="text-slate-400 text-sm">{dept.sub}</p>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs text-slate-500 group-hover:text-white/60 mt-4 transition-colors">
+                                        Open dashboard <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </Link>
                             </motion.div>
                         ))}
                     </div>

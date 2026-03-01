@@ -22,6 +22,8 @@ import SmartMeterDashboard from './pages/SmartMeterDashboard';
 import EmergencyMode from './pages/EmergencyMode';
 import SmartCityDevices from './pages/SmartCityDevices';
 import GovIntegration from './pages/GovIntegration';
+import ElectricityDepartment from './pages/ElectricityDepartment';
+import GasDepartment from './pages/GasDepartment';
 
 import AccessibilityToolbar from './components/AccessibilityToolbar';
 
@@ -122,6 +124,8 @@ function App() {
                 <Route path="/emergency-mode" element={<EmergencyMode />} />
                 <Route path="/smart-city-devices" element={<SmartCityDevices />} />
                 <Route path="/gov-integration" element={<GovIntegration />} />
+                <Route path="/electricity" element={<ElectricityDepartment />} />
+                <Route path="/gas" element={<GasDepartment />} />
 
                 {/* Catch-all 404 */}
                 <Route path="*" element={<NotFound />} />
