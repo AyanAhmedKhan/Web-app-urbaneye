@@ -1,6 +1,12 @@
-import { useState } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { Ear, EarOff, Sun, Moon, Type } from 'lucide-react';
+import { useLingoContext } from '@lingo.dev/compiler/react';
+import { Ear, EarOff, Sun, Moon, Type, Globe } from 'lucide-react';
+
+const LOCALES = [
+    { code: 'en', label: 'English', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'hi', label: '\u0939\u093F\u0928\u094D\u0926\u0940', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'mr', label: '\u092E\u0930\u093E\u0920\u0940', flag: '\u{1F1EE}\u{1F1F3}' },
+];
 
 const AccessibilityToolbar = () => {
     const {
@@ -9,7 +15,8 @@ const AccessibilityToolbar = () => {
         screenReaderEnabled, setScreenReaderEnabled
     } = useAccessibility();
 
-    const [language, setLanguage] = useState('English');
+    const { locale, setLocale } = useLingoContext();
+    const currentLocale = LOCALES.find((l) => l.code === locale) || LOCALES[0];
 
     const increaseFont = () => {
         if (fontSize === 'small') setFontSize('normal');
@@ -37,17 +44,7 @@ const AccessibilityToolbar = () => {
         <div className="relative z-[100] accessibility-toolbar">
             <div className="bg-[#1a2332] text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="flex items-center justify-between h-9">
-                        {/* Left: Skip to main content */}
-                        <a
-                            href="#main-content"
-                            className="text-[11px] font-medium text-slate-300 hover:text-white transition-colors focus:outline-none focus:text-white"
-                        >
-                            Skip to Main Content
-                        </a>
-
-                        {/* Right: all controls in a row */}
-                        <div className="flex items-center divide-x divide-white/15">
+                    <div className="flex items-center justify-end h-9 divide-x divide-white/15">
 
                             {/* Theme / Contrast toggle */}
                             <button
@@ -103,20 +100,21 @@ const AccessibilityToolbar = () => {
                             </button>
 
                             {/* Language selector */}
-                            <div className="relative">
+                            <div className="flex items-center">
+                                <Globe size={13} className="text-slate-400 ml-3 mr-1.5" />
                                 <select
-                                    value={language}
-                                    onChange={(e) => setLanguage(e.target.value)}
-                                    className="appearance-none bg-transparent px-3 h-9 text-[11px] font-semibold text-slate-300 hover:text-white cursor-pointer focus:outline-none"
+                                    value={locale}
+                                    onChange={(e) => setLocale(e.target.value)}
+                                    className="appearance-none bg-transparent pr-3 h-9 text-[11px] font-semibold text-slate-300 hover:text-white cursor-pointer focus:outline-none"
                                     aria-label="Select language"
                                 >
-                                    <option value="English" className="bg-[#1a2332] text-white">English</option>
-                                    <option value="हिन्दी" className="bg-[#1a2332] text-white">हिन्दी</option>
-                                    <option value="தமிழ்" className="bg-[#1a2332] text-white">தமிழ்</option>
-                                    <option value="తెలుగు" className="bg-[#1a2332] text-white">తెలుగు</option>
+                                    {LOCALES.map((loc) => (
+                                        <option key={loc.code} value={loc.code} className="bg-[#1a2332] text-white">
+                                            {loc.label}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
