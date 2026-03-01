@@ -24,13 +24,11 @@ const peakHourData = [
 ];
 
 const statusCfg = {
-    normal: { label: 'Normal', dot: 'bg-emerald-400', badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', bar: 'bg-emerald-500' },
-    warning: { label: 'Warning', dot: 'bg-amber-400', badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20', bar: 'bg-amber-500' },
-    overload: { label: 'Overload', dot: 'bg-red-400', badge: 'bg-red-500/10 text-red-400 border-red-500/20', bar: 'bg-red-500' },
+    normal: { label: 'Normal', dot: '#22c55e', badge: { bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' }, bar: '#22c55e' },
+    warning: { label: 'Warning', dot: '#f59e0b', badge: { bg: '#fffbeb', color: '#d97706', border: '#fde68a' }, bar: '#f59e0b' },
+    overload: { label: 'Overload', dot: '#ef4444', badge: { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' }, bar: '#ef4444' },
 };
-const complaintStatus = {
-    Assigned: 'text-amber-400', Resolved: 'text-emerald-400', 'En Route': 'text-blue-400', 'On Scene': 'text-purple-400',
-};
+const complaintStatus = { Assigned: '#d97706', Resolved: '#16a34a', 'En Route': '#3b82f6', 'On Scene': '#7c3aed' };
 
 const ElectricityDepartment = () => {
     const [loading, setLoading] = useState(true);
@@ -44,16 +42,11 @@ const ElectricityDepartment = () => {
 
     useEffect(() => {
         let step = 0;
-        const stepInterval = setInterval(() => {
-            step++;
-            setLoadingStep(step);
-            if (step >= steps.length - 1) clearInterval(stepInterval);
-        }, 600);
+        const stepInterval = setInterval(() => { step++; setLoadingStep(step); if (step >= steps.length - 1) clearInterval(stepInterval); }, 600);
         const doneTimer = setTimeout(() => setLoading(false), 2600);
         return () => { clearInterval(stepInterval); clearTimeout(doneTimer); };
     }, []);
 
-    // Simulate live load fluctuations
     useEffect(() => {
         if (loading) return;
         const interval = setInterval(() => {
@@ -62,26 +55,21 @@ const ElectricityDepartment = () => {
         return () => clearInterval(interval);
     }, [loading]);
 
-    const handleRefresh = () => {
-        setRefreshing(true);
-        setTimeout(() => { setRefreshing(false); setLastRefresh(new Date()); }, 1600);
-    };
+    const handleRefresh = () => { setRefreshing(true); setTimeout(() => { setRefreshing(false); setLastRefresh(new Date()); }, 1600); };
 
     if (loading) {
         return (
             <SmartCitySidebar>
-                <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-                    <div className="text-center max-w-md">
-                        <div className="w-20 h-20 border-4 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mx-auto mb-6" />
-                        <div className="text-white text-xl font-bold mb-1">Electricity Command</div>
-                        <div className="text-slate-400 text-sm mb-6">Delhi NCR Grid — UrbanAI Engine</div>
-                        <div className="space-y-2 text-left">
+                <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ textAlign: 'center', maxWidth: 360 }}>
+                        <div style={{ width: 56, height: 56, border: '3px solid #fef3c7', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 24px' }} />
+                        <div style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>Electricity Command</div>
+                        <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Delhi NCR Grid — UrbanAI Engine</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'left' }}>
                             {steps.map((s, i) => (
-                                <div key={i} className={`flex items-center gap-3 transition-all duration-500 ${i <= loadingStep ? 'opacity-100' : 'opacity-20'}`}>
-                                    {i < loadingStep ? <CheckCircle size={14} className="text-emerald-400 flex-shrink-0" /> :
-                                        i === loadingStep ? <div className="w-3.5 h-3.5 border-2 border-amber-400/40 border-t-amber-400 rounded-full animate-spin flex-shrink-0" /> :
-                                            <div className="w-3.5 h-3.5 rounded-full border border-slate-600 flex-shrink-0" />}
-                                    <span className={`text-sm ${i <= loadingStep ? 'text-slate-300' : 'text-slate-600'}`}>{s}</span>
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: i <= loadingStep ? 1 : 0.25, transition: 'opacity .4s' }}>
+                                    {i < loadingStep ? <CheckCircle size={14} color="#16a34a" /> : i === loadingStep ? <div style={{ width: 14, height: 14, border: '2px solid #fde68a', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> : <div style={{ width: 14, height: 14, borderRadius: '50%', border: '1px solid #cbd5e1' }} />}
+                                    <span style={{ fontSize: 13, color: i <= loadingStep ? '#475569' : '#94a3b8' }}>{s}</span>
                                 </div>
                             ))}
                         </div>
@@ -95,105 +83,101 @@ const ElectricityDepartment = () => {
 
     return (
         <SmartCitySidebar>
-            <div className="min-h-screen bg-slate-950 text-white">
+            <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
                 {/* Header */}
-                <div className="border-b border-white/5 bg-slate-900/60 backdrop-blur-sm sticky top-0 z-40">
-                    <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-xl flex items-center justify-center">
-                                <Zap size={20} />
+                <div style={{ borderBottom: '1px solid #f1f5f9', background: '#fff', position: 'sticky', top: 0, zIndex: 40 }}>
+                    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                            <div style={{ width: 40, height: 40, background: '#f59e0b', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Zap size={20} color="#fff" />
                             </div>
                             <div>
-                                <h1 className="font-bold text-white text-lg leading-none">Electricity Department</h1>
-                                <p className="text-slate-400 text-xs flex items-center gap-1"><MapPin size={10} />Delhi NCR — BSES Rajdhani & TPDDL Grid</p>
+                                <h1 style={{ fontWeight: 700, fontSize: 18, color: '#0f172a', margin: 0 }}>Electricity Department</h1>
+                                <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={10} />Delhi NCR — BSES Rajdhani & TPDDL Grid</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <span className="text-slate-500 text-xs flex items-center gap-1"><Clock size={10} />Updated: {lastRefresh.toLocaleTimeString()}</span>
-                            <button onClick={handleRefresh} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-sm border border-white/10 transition-all">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <span style={{ fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={10} />Updated: {lastRefresh.toLocaleTimeString()}</span>
+                            <button onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, color: '#475569', cursor: 'pointer' }}>
                                 <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />Refresh
                             </button>
-                            <span className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-xs border border-amber-500/20">
-                                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />Live Grid
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: '#fffbeb', color: '#d97706', borderRadius: 20, fontSize: 12, fontWeight: 600, border: '1px solid #fde68a' }}>
+                                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b' }} />Live Grid
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+                <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
                     {/* Stats */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
                         {[
-                            { label: 'Active Feeders', value: '5', sub: 'Delhi zones', color: 'from-amber-500 to-yellow-600', icon: Zap },
-                            { label: 'Overload Alerts', value: delhiZones.filter(z => z.status === 'overload').length, sub: 'Needs dispatch', color: 'from-red-500 to-rose-600', icon: AlertTriangle },
-                            { label: 'Active Complaints', value: recentComplaints.filter(c => c.status !== 'Resolved').length, sub: 'Being handled', color: 'from-blue-500 to-indigo-600', icon: Phone },
-                            { label: 'Avg Grid Load', value: `${Math.round(liveLoads.reduce((a, b) => a + b, 0) / liveLoads.length)}%`, sub: 'Real-time', color: 'from-purple-500 to-violet-600', icon: Gauge },
+                            { label: 'Active Feeders', value: '5', sub: 'Delhi zones', color: '#f59e0b', icon: Zap },
+                            { label: 'Overload Alerts', value: delhiZones.filter(z => z.status === 'overload').length, sub: 'Needs dispatch', color: '#ef4444', icon: AlertTriangle },
+                            { label: 'Active Complaints', value: recentComplaints.filter(c => c.status !== 'Resolved').length, sub: 'Being handled', color: '#3b82f6', icon: Phone },
+                            { label: 'Avg Grid Load', value: `${Math.round(liveLoads.reduce((a, b) => a + b, 0) / liveLoads.length)}%`, sub: 'Real-time', color: '#7c3aed', icon: Gauge },
                         ].map(({ label, value, sub, color, icon: Icon }) => (
-                            <div key={label} className="bg-slate-900 rounded-2xl border border-white/5 p-5">
-                                <div className={`w-10 h-10 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center mb-3`}><Icon size={18} /></div>
-                                <div className="text-3xl font-black text-white">{value}</div>
-                                <div className="text-white text-sm font-semibold mt-1">{label}</div>
-                                <div className="text-slate-500 text-xs">{sub}</div>
+                            <div key={label} style={{ background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', padding: 20 }}>
+                                <div style={{ width: 36, height: 36, background: `${color}15`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}><Icon size={17} color={color} /></div>
+                                <div style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{value}</div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', marginTop: 4 }}>{label}</div>
+                                <div style={{ fontSize: 12, color: '#94a3b8' }}>{sub}</div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-6">
-                        {/* Feeder Zone Cards */}
-                        <div className="lg:col-span-2 space-y-3">
-                            <h2 className="font-bold text-white flex items-center gap-2"><Activity size={18} className="text-amber-400" />Delhi Feeder Zones — Live Status</h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+                        {/* Feeder Zones */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <h2 style={{ fontWeight: 700, fontSize: 15, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}><Activity size={16} color="#f59e0b" />Delhi Feeder Zones — Live Status</h2>
                             {delhiZones.map((zone, i) => {
                                 const cfg = statusCfg[zone.status];
                                 const liveLoad = Math.round(liveLoads[i]);
                                 return (
                                     <div key={zone.id} onClick={() => setSelected(selected === zone.id ? null : zone.id)}
-                                        className={`bg-slate-900 rounded-2xl border cursor-pointer transition-all hover:border-amber-500/30 ${selected === zone.id ? 'border-amber-500/60 ring-1 ring-amber-500/10' : 'border-white/5'}`}>
-                                        <div className="p-5">
-                                            <div className="flex items-start justify-between mb-3">
+                                        style={{ background: '#fff', borderRadius: 12, border: `1px solid ${selected === zone.id ? '#fde68a' : '#f1f5f9'}`, cursor: 'pointer', transition: 'border-color .15s' }}>
+                                        <div style={{ padding: 20 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                                                 <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className={`w-2 h-2 rounded-full ${cfg.dot} animate-pulse`} />
-                                                        <span className="font-bold text-white">{zone.feeder}</span>
-                                                        <span className={`text-xs px-2 py-0.5 rounded-full border ${cfg.badge}`}>{cfg.label}</span>
-                                                        <span className="text-xs text-slate-500">{zone.id}</span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: cfg.dot }} />
+                                                        <span style={{ fontWeight: 700, color: '#0f172a', fontSize: 14 }}>{zone.feeder}</span>
+                                                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: cfg.badge.bg, color: cfg.badge.color, border: `1px solid ${cfg.badge.border}`, fontWeight: 600 }}>{cfg.label}</span>
+                                                        <span style={{ fontSize: 11, color: '#94a3b8' }}>{zone.id}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-1 text-slate-400 text-xs"><MapPin size={9} />{zone.area}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#94a3b8' }}><MapPin size={9} />{zone.area}</div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="text-2xl font-black text-white">{liveLoad}%</div>
-                                                    <div className="text-slate-500 text-xs">grid load</div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontSize: 24, fontWeight: 800, color: '#0f172a' }}>{liveLoad}%</div>
+                                                    <div style={{ fontSize: 11, color: '#94a3b8' }}>grid load</div>
                                                 </div>
                                             </div>
-                                            <div className="w-full bg-slate-800 rounded-full h-2 mb-3">
-                                                <div className={`h-2 rounded-full transition-all duration-700 ${cfg.bar}`} style={{ width: `${liveLoad}%` }} />
+                                            <div style={{ width: '100%', background: '#f1f5f9', borderRadius: 20, height: 6, marginBottom: 10 }}>
+                                                <div style={{ height: 6, borderRadius: 20, background: cfg.bar, width: `${liveLoad}%`, transition: 'width .7s' }} />
                                             </div>
-                                            {/* AI Prediction Band */}
-                                            <div className="flex items-center gap-2 bg-slate-800/60 rounded-xl px-3 py-2">
-                                                <div className="w-5 h-5 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Eye size={11} className="text-purple-400" />
-                                                </div>
-                                                <span className="text-slate-300 text-xs flex-1">{zone.prediction}</span>
-                                                <span className="text-purple-400 text-xs font-bold">{zone.predConf}%</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f8fafc', borderRadius: 8, padding: '8px 12px' }}>
+                                                <Eye size={12} color="#6366f1" />
+                                                <span style={{ fontSize: 12, color: '#475569', flex: 1 }}>{zone.prediction}</span>
+                                                <span style={{ fontSize: 12, color: '#6366f1', fontWeight: 700 }}>{zone.predConf}%</span>
                                             </div>
-
                                             {selected === zone.id && (
-                                                <div className="mt-3 pt-3 border-t border-white/5 grid grid-cols-3 gap-3">
-                                                    <div className="bg-slate-800 rounded-xl p-3 text-center">
-                                                        <div className="text-slate-400 text-xs">Voltage</div>
-                                                        <div className={`font-bold text-sm ${parseFloat(zone.voltage) < 210 ? 'text-amber-400' : 'text-emerald-400'}`}>{zone.voltage}</div>
+                                                <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #f1f5f9', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+                                                        <div style={{ fontSize: 11, color: '#94a3b8' }}>Voltage</div>
+                                                        <div style={{ fontWeight: 700, fontSize: 14, color: parseFloat(zone.voltage) < 210 ? '#d97706' : '#16a34a' }}>{zone.voltage}</div>
                                                     </div>
-                                                    <div className="bg-slate-800 rounded-xl p-3 text-center">
-                                                        <div className="text-slate-400 text-xs">Complaints</div>
-                                                        <div className="text-white font-bold text-sm">{zone.complaints}</div>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+                                                        <div style={{ fontSize: 11, color: '#94a3b8' }}>Complaints</div>
+                                                        <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>{zone.complaints}</div>
                                                     </div>
-                                                    <div className="bg-slate-800 rounded-xl p-3 text-center">
-                                                        <div className="text-slate-400 text-xs">AI Confidence</div>
-                                                        <div className="text-purple-400 font-bold text-sm">{zone.predConf}%</div>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12, textAlign: 'center' }}>
+                                                        <div style={{ fontSize: 11, color: '#94a3b8' }}>AI Confidence</div>
+                                                        <div style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>{zone.predConf}%</div>
                                                     </div>
-                                                    <div className="col-span-3 flex gap-2 mt-1">
-                                                        <button className="flex-1 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl">Dispatch Team</button>
-                                                        <button className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl">View Complaints</button>
-                                                        <button className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-sm font-bold rounded-xl">Map View</button>
+                                                    <div style={{ gridColumn: 'span 3', display: 'flex', gap: 8 }}>
+                                                        <button style={{ flex: 1, padding: '10px 0', background: '#f59e0b', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Dispatch Team</button>
+                                                        <button style={{ flex: 1, padding: '10px 0', background: '#3b82f6', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>View Complaints</button>
+                                                        <button style={{ flex: 1, padding: '10px 0', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Map View</button>
                                                     </div>
                                                 </div>
                                             )}
@@ -204,56 +188,53 @@ const ElectricityDepartment = () => {
                         </div>
 
                         {/* Right side */}
-                        <div className="space-y-4">
-                            {/* Peak Load Chart */}
-                            <div className="bg-slate-900 rounded-2xl border border-white/5 p-5">
-                                <h3 className="font-bold text-white mb-4 flex items-center gap-2"><TrendingUp size={16} className="text-amber-400" />Today's Load Profile</h3>
-                                <div className="flex items-end gap-1.5 h-24">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            {/* Peak Load */}
+                            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', padding: 20 }}>
+                                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 14px' }}><TrendingUp size={15} color="#f59e0b" />Today's Load Profile</h3>
+                                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 90 }}>
                                     {peakHourData.map(({ hour, load }) => (
-                                        <div key={hour} className="flex-1 flex flex-col items-center gap-1">
-                                            <div className={`w-full rounded-t-md transition-all ${load >= 90 ? 'bg-red-500' : load >= 80 ? 'bg-amber-500' : 'bg-emerald-500'}`}
-                                                style={{ height: `${(load / maxLoad) * 80}px` }} />
-                                            <div className="text-slate-600 text-xs">{hour}</div>
+                                        <div key={hour} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                            <div style={{ width: '100%', background: load >= 90 ? '#ef4444' : load >= 80 ? '#f59e0b' : '#22c55e', borderRadius: '3px 3px 0 0', height: `${(load / maxLoad) * 70}px`, transition: 'height .3s' }} />
+                                            <div style={{ fontSize: 9, color: '#94a3b8' }}>{hour}</div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="flex gap-3 mt-3 text-xs">
-                                    <span className="flex items-center gap-1 text-emerald-400"><span className="w-2 h-2 bg-emerald-500 rounded-full" />Normal</span>
-                                    <span className="flex items-center gap-1 text-amber-400"><span className="w-2 h-2 bg-amber-500 rounded-full" />Warning</span>
-                                    <span className="flex items-center gap-1 text-red-400"><span className="w-2 h-2 bg-red-500 rounded-full" />Overload</span>
+                                <div style={{ display: 'flex', gap: 12, marginTop: 10, fontSize: 11 }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#16a34a' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />Normal</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#d97706' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b' }} />Warning</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#dc2626' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />Overload</span>
                                 </div>
                             </div>
 
-                            {/* Recent Complaints */}
-                            <div className="bg-slate-900 rounded-2xl border border-white/5 p-5">
-                                <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Phone size={16} className="text-blue-400" />Recent Complaints</h3>
-                                <div className="space-y-3">
-                                    {recentComplaints.map(c => (
-                                        <div key={c.id} className="flex items-start justify-between gap-2 py-2 border-b border-white/5 last:border-0">
-                                            <div>
-                                                <div className="text-white text-xs font-bold">{c.id} · {c.type}</div>
-                                                <div className="text-slate-500 text-xs flex items-center gap-1 mt-0.5"><MapPin size={9} />{c.area}</div>
-                                                <div className="text-slate-600 text-xs mt-0.5">{c.officer} · {c.time}</div>
-                                            </div>
-                                            <span className={`text-xs font-semibold whitespace-nowrap ${complaintStatus[c.status]}`}>{c.status}</span>
+                            {/* Complaints */}
+                            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', padding: 20 }}>
+                                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 14px' }}><Phone size={15} color="#3b82f6" />Recent Complaints</h3>
+                                {recentComplaints.map(c => (
+                                    <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, padding: '10px 0', borderBottom: '1px solid #f8fafc' }}>
+                                        <div>
+                                            <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a' }}>{c.id} · {c.type}</div>
+                                            <div style={{ fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}><MapPin size={9} />{c.area}</div>
+                                            <div style={{ fontSize: 11, color: '#cbd5e1', marginTop: 2 }}>{c.officer} · {c.time}</div>
                                         </div>
-                                    ))}
-                                </div>
+                                        <span style={{ fontSize: 12, fontWeight: 600, color: complaintStatus[c.status], whiteSpace: 'nowrap' }}>{c.status}</span>
+                                    </div>
+                                ))}
                             </div>
 
-                            {/* Theft Monitor */}
-                            <div className="bg-slate-900 rounded-2xl border border-amber-500/20 p-5">
-                                <h3 className="font-bold text-amber-400 mb-3 flex items-center gap-2"><AlertTriangle size={16} />Theft Monitor</h3>
+                            {/* Theft */}
+                            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #fde68a', padding: 20 }}>
+                                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#d97706', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 12px' }}><AlertTriangle size={15} />Theft Monitor</h3>
                                 {[
                                     { area: 'Shahdara DP-7', gap: '31%', risk: 'High' },
                                     { area: 'Rohini Sec 11 DP-3', gap: '18%', risk: 'Medium' },
                                 ].map(({ area, gap, risk }) => (
-                                    <div key={area} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                    <div key={area} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #f8fafc' }}>
                                         <div>
-                                            <div className="text-white text-xs font-semibold">{area}</div>
-                                            <div className="text-slate-500 text-xs">Supply–billing gap: {gap}</div>
+                                            <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a' }}>{area}</div>
+                                            <div style={{ fontSize: 12, color: '#94a3b8' }}>Supply–billing gap: {gap}</div>
                                         </div>
-                                        <span className={`text-xs font-bold ${risk === 'High' ? 'text-red-400' : 'text-amber-400'}`}>{risk}</span>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: risk === 'High' ? '#ef4444' : '#d97706' }}>{risk}</span>
                                     </div>
                                 ))}
                             </div>

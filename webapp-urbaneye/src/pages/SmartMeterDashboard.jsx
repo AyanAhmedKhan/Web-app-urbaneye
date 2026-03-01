@@ -12,9 +12,9 @@ const meters = [
 ];
 
 const statusConfig = {
-    normal: { label: 'Normal', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', dot: 'bg-emerald-400' },
-    anomaly: { label: 'Anomaly', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', dot: 'bg-amber-400' },
-    theft_risk: { label: 'Theft Risk', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', dot: 'bg-red-400' },
+    normal: { label: 'Normal', color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', dot: '#22c55e' },
+    anomaly: { label: 'Anomaly', color: '#d97706', bg: '#fffbeb', border: '#fde68a', dot: '#f59e0b' },
+    theft_risk: { label: 'Theft Risk', color: '#dc2626', bg: '#fef2f2', border: '#fecaca', dot: '#ef4444' },
 };
 
 const SmartMeterDashboard = () => {
@@ -35,140 +35,105 @@ const SmartMeterDashboard = () => {
     const filtered = filter === 'all' ? meters : meters.filter(m => m.status === filter);
     const anomalyCount = meters.filter(m => m.status === 'anomaly').length;
     const theftCount = meters.filter(m => m.status === 'theft_risk').length;
-    const selectedMeter = meters.find(m => m.id === selected);
-
-    const handleRefresh = () => {
-        setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 1400);
-    };
 
     return (
         <SmartCitySidebar>
-            <div className="min-h-screen bg-slate-950 text-white">
-                <div className="border-b border-white/5 bg-slate-900/60 backdrop-blur-sm sticky top-0 z-40">
-                    <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <Gauge size={20} />
-                            </div>
+            <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+                <div style={{ borderBottom: '1px solid #f1f5f9', background: '#fff', position: 'sticky', top: 0, zIndex: 40 }}>
+                    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                            <div style={{ width: 40, height: 40, background: '#8b5cf6', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Gauge size={20} color="#fff" /></div>
                             <div>
-                                <h1 className="font-bold text-white text-lg leading-none">Smart Meter Dashboard</h1>
-                                <p className="text-slate-400 text-xs">Energy Anomaly Detection & Monitoring</p>
+                                <h1 style={{ fontWeight: 700, fontSize: 18, color: '#0f172a', margin: 0 }}>Smart Meter Dashboard</h1>
+                                <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Energy Anomaly Detection & Monitoring</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <button onClick={handleRefresh} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-sm transition-all border border-white/10">
-                                <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-                                Sync All
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <button onClick={() => { setRefreshing(true); setTimeout(() => setRefreshing(false), 1400); }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, color: '#475569', cursor: 'pointer' }}>
+                                <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />Sync All
                             </button>
-                            <span className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-400 rounded-full text-xs border border-green-500/20">
-                                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                {meters.length} Meters Active
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: '#f0fdf4', color: '#16a34a', borderRadius: 20, fontSize: 12, fontWeight: 600, border: '1px solid #bbf7d0' }}>
+                                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />{meters.length} Meters Active
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div style={{ maxWidth: 1200, margin: '0 auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
                         {[
-                            { label: 'Total Meters', value: meters.length, icon: Gauge, color: 'from-blue-500 to-indigo-600', sub: '6 zones covered' },
-                            { label: 'Anomaly Alerts', value: anomalyCount, icon: AlertTriangle, color: 'from-amber-500 to-orange-600', sub: 'Needs review' },
-                            { label: 'Theft Risk Flags', value: theftCount, icon: TrendingDown, color: 'from-red-500 to-rose-600', sub: 'Dispatch required' },
-                            { label: 'Avg Efficiency', value: '82%', icon: Activity, color: 'from-emerald-500 to-teal-600', sub: 'Supply vs. billed' },
+                            { label: 'Total Meters', value: meters.length, icon: Gauge, color: '#3b82f6', sub: '6 zones covered' },
+                            { label: 'Anomaly Alerts', value: anomalyCount, icon: AlertTriangle, color: '#f59e0b', sub: 'Needs review' },
+                            { label: 'Theft Risk Flags', value: theftCount, icon: TrendingDown, color: '#ef4444', sub: 'Dispatch required' },
+                            { label: 'Avg Efficiency', value: '82%', icon: Activity, color: '#10b981', sub: 'Supply vs. billed' },
                         ].map(({ label, value, icon: Icon, color, sub }) => (
-                            <div key={label} className="bg-slate-900 rounded-2xl p-5 border border-white/5">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className={`w-10 h-10 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center`}>
-                                        <Icon size={18} />
-                                    </div>
-                                    <Zap size={12} className="text-slate-600" />
+                            <div key={label} style={{ background: '#fff', borderRadius: 12, padding: 20, border: '1px solid #f1f5f9' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                                    <div style={{ width: 36, height: 36, background: `${color}15`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={17} color={color} /></div>
                                 </div>
-                                <div className="text-3xl font-black text-white">{value}</div>
-                                <div className="text-white text-sm font-semibold mt-1">{label}</div>
-                                <div className="text-slate-500 text-xs">{sub}</div>
+                                <div style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{value}</div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', marginTop: 4 }}>{label}</div>
+                                <div style={{ fontSize: 12, color: '#94a3b8' }}>{sub}</div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-6">
-                        {/* Meter List */}
-                        <div className="lg:col-span-2">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="font-bold text-white">Distribution Points</h2>
-                                <div className="flex gap-2">
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14, alignItems: 'center' }}>
+                                <h2 style={{ fontWeight: 700, fontSize: 15, color: '#0f172a', margin: 0 }}>Distribution Points</h2>
+                                <div style={{ display: 'flex', gap: 6 }}>
                                     {['all', 'normal', 'anomaly', 'theft_risk'].map(f => (
-                                        <button key={f} onClick={() => setFilter(f)}
-                                            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${filter === f ? 'bg-amber-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
+                                        <button key={f} onClick={() => setFilter(f)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer', background: filter === f ? '#6366f1' : '#f1f5f9', color: filter === f ? '#fff' : '#64748b', transition: 'all .15s' }}>
                                             {f === 'all' ? 'All' : f === 'theft_risk' ? 'Theft Risk' : f.charAt(0).toUpperCase() + f.slice(1)}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                            <div className="space-y-2">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                 {filtered.map(meter => {
                                     const cfg = statusConfig[meter.status];
-                                    const isPulsing = pulseIds.includes(meter.id);
                                     const gap = meter.supplied - meter.billed;
                                     const gapPct = ((gap / meter.supplied) * 100).toFixed(1);
                                     return (
                                         <div key={meter.id} onClick={() => setSelected(selected === meter.id ? null : meter.id)}
-                                            className={`bg-slate-900 rounded-2xl border cursor-pointer transition-all hover:border-amber-500/30 ${selected === meter.id ? 'border-amber-500/50' : 'border-white/5'} ${isPulsing ? 'ring-1 ring-blue-500/30' : ''}`}>
-                                            <div className="p-4 flex items-center justify-between">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="relative">
-                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cfg.bg} border ${cfg.border}`}>
-                                                            <Zap size={18} className={cfg.color} />
+                                            style={{ background: '#fff', borderRadius: 12, border: `1px solid ${selected === meter.id ? '#c7d2fe' : '#f1f5f9'}`, cursor: 'pointer', transition: 'border-color .15s' }}>
+                                            <div style={{ padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <div style={{ width: 40, height: 40, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: cfg.bg, border: `1px solid ${cfg.border}` }}>
+                                                            <Zap size={18} color={cfg.color} />
                                                         </div>
-                                                        <span className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${cfg.dot} ${isPulsing ? 'animate-ping' : ''}`} />
+                                                        <span style={{ position: 'absolute', top: -3, right: -3, width: 10, height: 10, borderRadius: '50%', background: cfg.dot, border: '2px solid #fff' }} />
                                                     </div>
                                                     <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="font-bold text-white text-sm">{meter.id}</span>
-                                                            <span className={`text-xs px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.color} border ${cfg.border}`}>{cfg.label}</span>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                            <span style={{ fontWeight: 700, color: '#0f172a', fontSize: 14 }}>{meter.id}</span>
+                                                            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`, fontWeight: 600 }}>{cfg.label}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1 text-slate-400 text-xs mt-0.5">
-                                                            <MapPin size={10} />{meter.zone}
-                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#94a3b8', marginTop: 2 }}><MapPin size={10} />{meter.zone}</div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <div className="text-white font-bold">{meter.consumption}%</div>
-                                                    <div className="text-slate-500 text-xs">efficiency</div>
-                                                    {meter.status !== 'normal' && (
-                                                        <div className="text-red-400 text-xs font-semibold mt-1">-{gapPct}% gap</div>
-                                                    )}
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <div style={{ fontWeight: 700, color: '#0f172a', fontSize: 16 }}>{meter.consumption}%</div>
+                                                    <div style={{ fontSize: 11, color: '#94a3b8' }}>efficiency</div>
+                                                    {meter.status !== 'normal' && <div style={{ fontSize: 12, color: '#ef4444', fontWeight: 600, marginTop: 2 }}>-{gapPct}% gap</div>}
                                                 </div>
                                             </div>
                                             {selected === meter.id && (
-                                                <div className="border-t border-white/5 p-4 grid grid-cols-3 gap-3">
-                                                    <div className="bg-slate-800 rounded-xl p-3">
-                                                        <div className="text-slate-400 text-xs">Supplied</div>
-                                                        <div className="text-white font-bold">{meter.supplied} kWh</div>
-                                                    </div>
-                                                    <div className="bg-slate-800 rounded-xl p-3">
-                                                        <div className="text-slate-400 text-xs">Billed</div>
-                                                        <div className="text-white font-bold">{meter.billed} kWh</div>
-                                                    </div>
-                                                    <div className="bg-slate-800 rounded-xl p-3">
-                                                        <div className="text-slate-400 text-xs">Last Synced</div>
-                                                        <div className="text-blue-400 font-bold text-sm">{meter.lastSync}</div>
-                                                    </div>
-                                                    <div className="col-span-3">
-                                                        <div className="w-full bg-slate-700 rounded-full h-2 mb-1">
-                                                            <div className={`h-2 rounded-full transition-all ${meter.status === 'normal' ? 'bg-emerald-500' : meter.status === 'anomaly' ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${meter.consumption}%` }} />
+                                                <div style={{ borderTop: '1px solid #f1f5f9', padding: 16, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12 }}><div style={{ fontSize: 11, color: '#94a3b8' }}>Supplied</div><div style={{ fontWeight: 700, color: '#0f172a' }}>{meter.supplied} kWh</div></div>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12 }}><div style={{ fontSize: 11, color: '#94a3b8' }}>Billed</div><div style={{ fontWeight: 700, color: '#0f172a' }}>{meter.billed} kWh</div></div>
+                                                    <div style={{ background: '#f8fafc', borderRadius: 8, padding: 12 }}><div style={{ fontSize: 11, color: '#94a3b8' }}>Last Synced</div><div style={{ fontWeight: 700, color: '#3b82f6', fontSize: 13 }}>{meter.lastSync}</div></div>
+                                                    <div style={{ gridColumn: 'span 3' }}>
+                                                        <div style={{ width: '100%', background: '#f1f5f9', borderRadius: 20, height: 6 }}>
+                                                            <div style={{ height: 6, borderRadius: 20, background: meter.status === 'normal' ? '#22c55e' : meter.status === 'anomaly' ? '#f59e0b' : '#ef4444', width: `${meter.consumption}%`, transition: 'width .3s' }} />
                                                         </div>
-                                                        <div className="flex justify-between text-xs text-slate-500"><span>0 kWh</span><span>{meter.supplied} kWh max</span></div>
                                                     </div>
                                                     {meter.status !== 'normal' && (
-                                                        <div className="col-span-3 flex gap-2">
-                                                            <button className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition-all">
-                                                                Flag for Investigation
-                                                            </button>
-                                                            <button className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-semibold rounded-xl border border-white/10">
-                                                                Dispatch Inspector
-                                                            </button>
+                                                        <div style={{ gridColumn: 'span 3', display: 'flex', gap: 8 }}>
+                                                            <button style={{ flex: 1, padding: '10px 0', background: '#ef4444', border: 'none', color: '#fff', fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Flag for Investigation</button>
+                                                            <button style={{ flex: 1, padding: '10px 0', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', fontSize: 13, fontWeight: 600, borderRadius: 8, cursor: 'pointer' }}>Dispatch Inspector</button>
                                                         </div>
                                                     )}
                                                 </div>
@@ -179,44 +144,37 @@ const SmartMeterDashboard = () => {
                             </div>
                         </div>
 
-                        {/* Side Panel */}
-                        <div className="space-y-4">
-                            <div className="bg-slate-900 rounded-2xl border border-white/5 p-5">
-                                <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                                    <AlertTriangle size={16} className="text-red-400" />Alert Log
-                                </h3>
-                                <div className="space-y-3">
-                                    {[
-                                        { meter: 'SM-3391', event: 'Supply–billing gap exceeded 35% threshold', time: '3 min ago', level: 'red' },
-                                        { meter: 'SM-1042', event: 'Unusual off-peak consumption spike detected', time: '18 min ago', level: 'amber' },
-                                        { meter: 'SM-5209', event: 'Meter tamper flag from field sensor', time: '42 min ago', level: 'red' },
-                                        { meter: 'SM-2187', event: 'Routine sync completed successfully', time: '1h ago', level: 'green' },
-                                    ].map((alert, i) => (
-                                        <div key={i} className="flex items-start gap-3 py-2 border-b border-white/5 last:border-0">
-                                            <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${alert.level === 'red' ? 'bg-red-400' : alert.level === 'amber' ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-                                            <div>
-                                                <div className="text-white text-xs font-semibold">{alert.meter}</div>
-                                                <div className="text-slate-400 text-xs">{alert.event}</div>
-                                                <div className="text-slate-600 text-xs flex items-center gap-1 mt-0.5"><Clock size={9} />{alert.time}</div>
-                                            </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', padding: 20 }}>
+                                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}><AlertTriangle size={15} color="#ef4444" />Alert Log</h3>
+                                {[
+                                    { meter: 'SM-3391', event: 'Supply–billing gap exceeded 35% threshold', time: '3 min ago', level: 'red' },
+                                    { meter: 'SM-1042', event: 'Unusual off-peak consumption spike detected', time: '18 min ago', level: 'amber' },
+                                    { meter: 'SM-5209', event: 'Meter tamper flag from field sensor', time: '42 min ago', level: 'red' },
+                                    { meter: 'SM-2187', event: 'Routine sync completed successfully', time: '1h ago', level: 'green' },
+                                ].map((alert, i) => (
+                                    <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid #f8fafc' }}>
+                                        <span style={{ width: 8, height: 8, borderRadius: '50%', marginTop: 5, flexShrink: 0, background: alert.level === 'red' ? '#ef4444' : alert.level === 'amber' ? '#f59e0b' : '#22c55e' }} />
+                                        <div>
+                                            <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a' }}>{alert.meter}</div>
+                                            <div style={{ fontSize: 12, color: '#64748b' }}>{alert.event}</div>
+                                            <div style={{ fontSize: 11, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}><Clock size={9} />{alert.time}</div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
 
-                            <div className="bg-slate-900 rounded-2xl border border-white/5 p-5">
-                                <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                                    <CheckCircle size={16} className="text-emerald-400" />System Health
-                                </h3>
+                            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #f1f5f9', padding: 20 }}>
+                                <h3 style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}><CheckCircle size={15} color="#10b981" />System Health</h3>
                                 {[
                                     { label: 'API Sync Status', status: 'Connected', ok: true },
                                     { label: 'Meter Firmware', status: 'v3.2.1 (Current)', ok: true },
                                     { label: 'Alert Engine', status: 'Running', ok: true },
                                     { label: 'SM-5209 Signal', status: 'Weak (−78dBm)', ok: false },
                                 ].map(({ label, status, ok }) => (
-                                    <div key={label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                                        <span className="text-slate-400 text-xs">{label}</span>
-                                        <span className={`text-xs font-semibold ${ok ? 'text-emerald-400' : 'text-amber-400'}`}>{status}</span>
+                                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f8fafc' }}>
+                                        <span style={{ fontSize: 13, color: '#64748b' }}>{label}</span>
+                                        <span style={{ fontSize: 12, fontWeight: 600, color: ok ? '#16a34a' : '#d97706' }}>{status}</span>
                                     </div>
                                 ))}
                             </div>
