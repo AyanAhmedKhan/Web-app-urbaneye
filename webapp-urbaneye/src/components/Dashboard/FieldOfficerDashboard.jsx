@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    LayoutDashboard, CheckCircle, FileText, Settings, LogOut,
+    LayoutDashboard, CheckCircle, FileText, LogOut,
     Menu, X, MapPin, RefreshCw, Camera, Clock, Activity,
     AlertTriangle, ChevronRight, ChevronLeft, Search, Filter,
     ArrowUpRight, ArrowDownRight, Zap, TrendingUp, Eye,
-    Navigation, Play, CircleCheck, Timer, Star, BarChart3
+    Navigation, Play, CircleCheck, Timer, Star, BarChart3, Map as MapIcon,
+    Calendar, Award, Target, Route, BookOpen, CheckCircle2
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -107,8 +108,10 @@ const FieldOfficerDashboard = () => {
     const navItems = [
         { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
         { id: 'tasks', icon: FileText, label: 'My Tasks' },
+        { id: 'map', icon: MapIcon, label: 'Map View' },
         { id: 'completed', icon: CheckCircle, label: 'Completed' },
         { id: 'performance', icon: BarChart3, label: 'Performance' },
+        { id: 'activity', icon: BookOpen, label: 'Activity Log' },
     ];
 
     const statCards = [
@@ -207,8 +210,10 @@ const FieldOfficerDashboard = () => {
                         <h1 className="text-xl font-bold text-slate-800">
                             {activeView === 'overview' && 'Dashboard Overview'}
                             {activeView === 'tasks' && 'My Active Tasks'}
+                            {activeView === 'map' && 'Map View & Navigation'}
                             {activeView === 'completed' && 'Completed Tasks'}
                             {activeView === 'performance' && 'Performance Metrics'}
+                            {activeView === 'activity' && 'Activity Log'}
                         </h1>
                         <p className="text-sm text-slate-500 mt-0.5">
                             {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
@@ -335,11 +340,16 @@ const FieldOfficerDashboard = () => {
                                         {/* Quick Actions */}
                                         <div className="bg-white rounded-2xl border border-slate-200 p-6">
                                             <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">Quick Actions</h3>
-                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                                                 <button onClick={() => setActiveView('tasks')}
                                                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all group">
                                                     <FileText size={24} className="group-hover:scale-110 transition-transform" />
                                                     <span className="text-xs font-semibold">View Tasks</span>
+                                                </button>
+                                                <button onClick={() => setActiveView('map')}
+                                                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-all group">
+                                                    <MapIcon size={24} className="group-hover:scale-110 transition-transform" />
+                                                    <span className="text-xs font-semibold">Map View</span>
                                                 </button>
                                                 <button onClick={() => setActiveView('completed')}
                                                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all group">
@@ -355,6 +365,11 @@ const FieldOfficerDashboard = () => {
                                                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 transition-all group">
                                                     <TrendingUp size={24} className="group-hover:scale-110 transition-transform" />
                                                     <span className="text-xs font-semibold">My Stats</span>
+                                                </button>
+                                                <button onClick={() => setActiveView('activity')}
+                                                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 transition-all group">
+                                                    <BookOpen size={24} className="group-hover:scale-110 transition-transform" />
+                                                    <span className="text-xs font-semibold">Activity</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -503,6 +518,31 @@ const FieldOfficerDashboard = () => {
                                             </div>
                                         </div>
 
+                                        {/* Daily/Weekly Stats */}
+                                        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                            <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">
+                                                Quick Stats
+                                            </h3>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                                <div className="text-center">
+                                                    <p className="text-2xl font-bold text-blue-700">{stats.assigned}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">Assigned</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-2xl font-bold text-indigo-700">{stats.inProgress}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">In Progress</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-2xl font-bold text-red-700">{stats.highSev}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">High Priority</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-2xl font-bold text-emerald-700">{stats.resolved}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">Completed</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {/* Breakdown */}
                                         <div className="bg-white rounded-2xl border border-slate-200 p-6">
                                             <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">Task Breakdown by Severity</h3>
@@ -535,11 +575,225 @@ const FieldOfficerDashboard = () => {
                                                 {Object.entries(
                                                     tasks.reduce((acc, t) => { acc[t.category] = (acc[t.category] || 0) + 1; return acc; }, {})
                                                 ).sort((a, b) => b[1] - a[1]).map(([cat, count]) => (
-                                                    <div key={cat} className="bg-slate-50 rounded-xl p-4 text-center">
+                                                    <div key={cat} className="bg-slate-50 rounded-xl p-4 text-center hover:bg-slate-100 transition-all">
                                                         <p className="text-2xl font-bold text-slate-800">{count}</p>
                                                         <p className="text-xs text-slate-500 capitalize mt-1">{cat}</p>
                                                     </div>
                                                 ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Performance Insights */}
+                                        <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-6 text-white">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                                                    <Award size={24} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg">Performance Insights</h3>
+                                                    <p className="text-sm text-emerald-50">Your work summary</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                                <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                                                    <p className="text-2xl font-bold">{stats.resolved}</p>
+                                                    <p className="text-sm text-emerald-50 mt-1">Total Completed</p>
+                                                </div>
+                                                <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                                                    <p className="text-2xl font-bold">{resolutionRate}%</p>
+                                                    <p className="text-sm text-emerald-50 mt-1">Success Rate</p>
+                                                </div>
+                                            </div>
+                                            {resolutionRate >= 80 && (
+                                                <div className="mt-4 flex items-center gap-2 bg-white/20 rounded-xl p-3 backdrop-blur-sm">
+                                                    <Star size={20} className="text-yellow-300" />
+                                                    <p className="text-sm font-medium">Excellent performance! Keep it up! 🎉</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ===== MAP VIEW ===== */}
+                                {activeView === 'map' && (
+                                    <div className="space-y-6">
+                                        {/* Map Placeholder */}
+                                        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                                            <div className="h-[400px] relative bg-gradient-to-br from-blue-50 to-emerald-50 flex items-center justify-center">
+                                                <div className="text-center">
+                                                    <MapIcon size={64} className="text-slate-300 mx-auto mb-4" />
+                                                    <h3 className="text-lg font-bold text-slate-600 mb-2">Interactive Map View</h3>
+                                                    <p className="text-sm text-slate-500 mb-4">View all your tasks on a map</p>
+                                                    <div className="flex gap-2 justify-center">
+                                                        <span className="px-3 py-1.5 bg-red-500 text-white rounded-full text-xs font-semibold">High Priority</span>
+                                                        <span className="px-3 py-1.5 bg-amber-500 text-white rounded-full text-xs font-semibold">Medium Priority</span>
+                                                        <span className="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-xs font-semibold">Low Priority</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Nearby Tasks */}
+                                        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">
+                                                    <Route className="inline mr-2" size={16} />
+                                                    Nearby Tasks
+                                                </h3>
+                                                <span className="text-xs text-emerald-600 font-medium">
+                                                    {tasks.filter(t => t.status !== 'resolved' && t.latitude).length} tasks with location
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {tasks.filter(t => t.status !== 'resolved' && t.latitude).slice(0, 6).map((task, idx) => {
+                                                    const sev = SEVERITY_CONFIG[task.severity] || SEVERITY_CONFIG.medium;
+                                                    return (
+                                                        <motion.div key={task.id} initial={{ opacity: 0, x: -10 }} 
+                                                            animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}
+                                                            className={`p-4 rounded-xl border ${sev.border} ${sev.bg}`}>
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <h4 className="font-semibold text-sm text-slate-800 capitalize">{task.category}</h4>
+                                                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${sev.badge}`}>
+                                                                    {task.severity?.toUpperCase()}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.description}</p>
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-1 text-xs text-slate-400">
+                                                                    <MapPin size={12} />
+                                                                    <span>{task.latitude?.toFixed(3)}, {task.longitude?.toFixed(3)}</span>
+                                                                </div>
+                                                                <a href={`https://www.google.com/maps?q=${task.latitude},${task.longitude}`}
+                                                                    target="_blank" rel="noopener noreferrer"
+                                                                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">
+                                                                    Navigate →
+                                                                </a>
+                                                            </div>
+                                                        </motion.div>
+                                                    );
+                                                })}
+                                            </div>
+                                            {tasks.filter(t => t.status !== 'resolved' && t.latitude).length === 0 && (
+                                                <div className="text-center py-8 text-slate-400">
+                                                    <MapPin size={40} className="mx-auto mb-2" />
+                                                    <p className="text-sm">No tasks with location data</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Route Optimization Suggestion */}
+                                        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                                                    <Route size={24} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg">Smart Route Planning</h3>
+                                                    <p className="text-sm text-blue-50">Optimize your field visits</p>
+                                                </div>
+                                            </div>
+                                            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                                                <p className="text-sm mb-2">💡 Recommended route saves time by visiting nearby locations together</p>
+                                                <div className="flex items-center justify-between mt-3">
+                                                    <span className="text-xs">Plan your day efficiently</span>
+                                                    <button className="px-3 py-1.5 bg-white text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-50 transition-all">
+                                                        View Route
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ===== ACTIVITY LOG ===== */}
+                                {activeView === 'activity' && (
+                                    <div className="space-y-6">
+                                        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                            <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">
+                                                <Calendar className="inline mr-2" size={16} />
+                                                Recent Activity
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {tasks.slice(0, 15).map((task, idx) => {
+                                                    const getActivityIcon = (status) => {
+                                                        if (status === 'resolved') return <CheckCircle2 className="text-emerald-600" size={16} />;
+                                                        if (status === 'in_progress') return <Activity className="text-indigo-600" size={16} />;
+                                                        if (status === 'assigned') return <Clock className="text-blue-600" size={16} />;
+                                                        return <AlertTriangle className="text-amber-600" size={16} />;
+                                                    };
+
+                                                    const getActivityText = (task) => {
+                                                        if (task.status === 'resolved') return 'Completed';
+                                                        if (task.status === 'in_progress') return 'Working on';
+                                                        if (task.status === 'assigned') return 'Assigned to you';
+                                                        return 'New report';
+                                                    };
+
+                                                    return (
+                                                        <motion.div key={task.id} initial={{ opacity: 0, x: -20 }} 
+                                                            animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
+                                                            className="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition-all">
+                                                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                                                                {getActivityIcon(task.status)}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-semibold text-slate-800">
+                                                                    {getActivityText(task)} <span className="capitalize text-emerald-600">{task.category}</span>
+                                                                </p>
+                                                                <p className="text-xs text-slate-500 line-clamp-1">{task.description}</p>
+                                                                <p className="text-xs text-slate-400 mt-1">
+                                                                    {task.timestamp ? new Date(task.timestamp * 1000).toLocaleString('en-IN', {
+                                                                        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                                                                    }) : 'Recently'}
+                                                                </p>
+                                                            </div>
+                                                            <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex-shrink-0
+                                                                ${STATUS_CONFIG[task.status]?.bg || 'bg-slate-100 text-slate-600'}`}>
+                                                                {STATUS_CONFIG[task.status]?.label || task.status}
+                                                            </span>
+                                                        </motion.div>
+                                                    );
+                                                })}
+                                                {tasks.length === 0 && (
+                                                    <div className="text-center py-8 text-slate-400">
+                                                        <BookOpen size={40} className="mx-auto mb-2" />
+                                                        <p className="text-sm">No activity to show</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Daily Summary */}
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                                        <Target size={20} className="text-blue-600" />
+                                                    </div>
+                                                    <h4 className="font-semibold text-slate-800">Today's Tasks</h4>
+                                                </div>
+                                                <p className="text-3xl font-bold text-slate-800">{stats.assigned + stats.inProgress}</p>
+                                                <p className="text-xs text-slate-500 mt-1">Active tasks assigned to you</p>
+                                            </div>
+                                            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                                        <CheckCircle2 size={20} className="text-emerald-600" />
+                                                    </div>
+                                                    <h4 className="font-semibold text-slate-800">Completed</h4>
+                                                </div>
+                                                <p className="text-3xl font-bold text-slate-800">{stats.resolved}</p>
+                                                <p className="text-xs text-slate-500 mt-1">Tasks resolved successfully</p>
+                                            </div>
+                                            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                                        <Timer size={20} className="text-amber-600" />
+                                                    </div>
+                                                    <h4 className="font-semibold text-slate-800">Avg. Time</h4>
+                                                </div>
+                                                <p className="text-3xl font-bold text-slate-800">~2h</p>
+                                                <p className="text-xs text-slate-500 mt-1">Per task completion</p>
                                             </div>
                                         </div>
                                     </div>
