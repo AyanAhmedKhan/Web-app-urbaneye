@@ -6,6 +6,8 @@ import { LogOut, LayoutDashboard, Building, Users, ClipboardList, Activity, MapI
 import TaskList from '../components/Dashboard/TaskList';
 import CivilianDashboard from '../components/Dashboard/CivilianDashboard';
 import SuperAdminDashboard from '../components/Dashboard/SuperAdminDashboard';
+import GigWorkerDashboard from '../components/Dashboard/GigWorkerDashboard';
+import SocialWorkerDashboard from '../components/Dashboard/SocialWorkerDashboard';
 import 'leaflet/dist/leaflet.css';
 import '../components/Dashboard/TaskList.css';
 import '../styles/Dashboard.css';
@@ -296,156 +298,12 @@ const Dashboard = () => {
 
     // Gig Worker Dashboard
     if (user?.role === 'gig_worker') {
-        return (
-            <div className="modern-dashboard">
-                <aside className="modern-sidebar">
-                    <div className="sidebar-brand">
-                        <div className="brand-icon" style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}>
-                            <Briefcase size={24} />
-                        </div>
-                        <span className="brand-text">Gig Worker</span>
-                    </div>
-
-                    <nav className="sidebar-nav">
-                        <button className={`nav-item ${activeView === 'overview' ? 'active' : ''}`} onClick={() => setActiveView('overview')}>
-                            <TrendingUp size={20} />
-                            <span>Available Jobs</span>
-                        </button>
-                        <button className={`nav-item ${activeView === 'maps' ? 'active' : ''}`} onClick={() => setActiveView('maps')}>
-                            <Map size={20} />
-                            <span>Job Map</span>
-                        </button>
-                        <button className={`nav-item ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
-                            <Settings size={20} />
-                            <span>Settings</span>
-                        </button>
-                    </nav>
-
-                    <div className="sidebar-footer">
-                        <button className="nav-item logout-btn" onClick={handleLogout}>
-                            <LogOut size={20} />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </aside>
-
-                <main className="modern-content">
-                    <div className="content-header">
-                        <div>
-                            <h1 className="page-title">⚡ Gig Worker Dashboard</h1>
-                            <p className="page-subtitle">Find and complete jobs to earn money</p>
-                        </div>
-                    </div>
-
-                    <div className="admin-stats-grid">
-                        <div className="admin-stat glass-panel">
-                            <span className="stat-value">8</span>
-                            <span className="stat-label">Available Jobs</span>
-                        </div>
-                        <div className="admin-stat glass-panel">
-                            <span className="stat-value">₹2,400</span>
-                            <span className="stat-label">Earned Today</span>
-                        </div>
-                        <div className="admin-stat glass-panel">
-                            <span className="stat-value">4.8</span>
-                            <span className="stat-label">Your Rating</span>
-                        </div>
-                        <div className="admin-stat glass-panel">
-                            <span className="stat-value">12</span>
-                            <span className="stat-label">Jobs Completed</span>
-                        </div>
-                    </div>
-
-                    {activeView === 'overview' && (
-                        <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-                            <Briefcase size={48} style={{ color: 'var(--color-primary)', marginBottom: '1rem' }} />
-                            <h3>Jobs Available Near You</h3>
-                            <p style={{ color: 'var(--color-text-muted)' }}>Accept jobs from civilians to earn money</p>
-                            <p style={{ marginTop: '1rem', color: 'var(--color-text-subtle)' }}>Job matching system coming soon!</p>
-                        </div>
-                    )}
-                    {activeView === 'maps' && <MapsView />}
-                    {activeView === 'settings' && <SettingsSection />}
-                </main>
-            </div>
-        );
+        return <GigWorkerDashboard />;
     }
 
     // NGO / Social Worker Dashboard
     if (user?.role === 'social_worker') {
-        return (
-            <div className="modern-dashboard">
-                <aside className="modern-sidebar">
-                    <div className="sidebar-brand">
-                        <div className="brand-icon" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                            <Heart size={24} />
-                        </div>
-                        <span className="brand-text">NGO Portal</span>
-                    </div>
-
-                    <nav className="sidebar-nav">
-                        <button className={`nav-item ${activeView === 'overview' ? 'active' : ''}`} onClick={() => setActiveView('overview')}>
-                            <TrendingUp size={20} />
-                            <span>Help Requests</span>
-                        </button>
-                        <button className={`nav-item ${activeView === 'maps' ? 'active' : ''}`} onClick={() => setActiveView('maps')}>
-                            <Map size={20} />
-                            <span>Issue Map</span>
-                        </button>
-                        <button className={`nav-item ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
-                            <Settings size={20} />
-                            <span>Settings</span>
-                        </button>
-                    </nav>
-
-                    <div className="sidebar-footer">
-                        <button className="nav-item logout-btn" onClick={handleLogout}>
-                            <LogOut size={20} />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </aside>
-
-                <main className="modern-content">
-                    <div className="content-header">
-                        <div>
-                            <h1 className="page-title">💚 NGO Partner Dashboard</h1>
-                            <p className="page-subtitle">Review and respond to community help requests</p>
-                        </div>
-                    </div>
-
-                    <div className="admin-stats-grid">
-                        <div className="admin-stat glass-panel" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                            <span className="stat-value" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>5</span>
-                            <span className="stat-label">Pending Requests</span>
-                        </div>
-                        <div className="admin-stat glass-panel" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                            <span className="stat-value" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>23</span>
-                            <span className="stat-label">Families Helped</span>
-                        </div>
-                        <div className="admin-stat glass-panel" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                            <span className="stat-value" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>89</span>
-                            <span className="stat-label">Volunteers</span>
-                        </div>
-                        <div className="admin-stat glass-panel" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                            <span className="stat-value" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>4.9</span>
-                            <span className="stat-label">Community Rating</span>
-                        </div>
-                    </div>
-
-                    {activeView === 'overview' && (
-                        <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-                            <Heart size={48} style={{ color: '#10b981', marginBottom: '1rem' }} />
-                            <h3>Community Help Requests</h3>
-                            <p style={{ color: 'var(--color-text-muted)' }}>Review requests from civilians who need NGO assistance</p>
-                            <p style={{ marginTop: '1rem', color: 'var(--color-text-subtle)' }}>Request queue coming soon!</p>
-                        </div>
-                    )}
-                    {activeView === 'maps' && <MapsView />}
-                    {activeView === 'settings' && <SettingsSection />}
-                </main>
-            </div>
-        );
+        return <SocialWorkerDashboard />;
     }
 
     // Civilian Dashboard Layout
