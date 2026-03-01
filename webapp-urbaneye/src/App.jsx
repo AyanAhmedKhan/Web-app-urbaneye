@@ -18,9 +18,12 @@ import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import Chatbot from './components/Chatbot';
 
+import AccessibilityToolbar from './components/AccessibilityToolbar';
+
 function App() {
     return (
         <AuthProvider>
+            <AccessibilityToolbar />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />

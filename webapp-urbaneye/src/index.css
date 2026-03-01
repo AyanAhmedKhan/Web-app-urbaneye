@@ -34,3 +34,56 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #cbd5e1;
 }
+
+/* --- Accessibility Adjustments --- */
+
+/* Font Size Scaling */
+html.font-size-small {
+    font-size: 14px !important;
+}
+
+html.font-size-large {
+    font-size: 18px !important;
+}
+
+/* Contrast Modes using CSS Filters for robust and instant application */
+html.contrast-dark {
+    filter: invert(1) hue-rotate(180deg);
+    background-color: #111;
+}
+
+html.contrast-dark img,
+html.contrast-dark video,
+html.contrast-dark iframe {
+    /* Re-invert media so it looks normal */
+    filter: invert(1) hue-rotate(180deg);
+}
+
+html.contrast-high {
+    filter: contrast(1.5) saturate(1.2);
+}
+
+/* Screen Reader Enhanced Focus */
+html.screen-reader-mode *:focus {
+    outline: 4px solid #ef4444 !important;
+    outline-offset: 2px !important;
+}
+
+/* Push navigation down if toolbar is fixed at top - we put toolbar relative to flow, 
+   so Navbar will need to ensure it doesn't overlap if it's 'fixed top-0'. 
+   Wait, Navbar is 'fixed top-0', if toolbar is in flow above it, it will be hidden by navbar.
+   We need to ensure layout handles it. 
+*/
+/* Push navigation and body down for fixed toolbar */
+body {
+    padding-top: 44px;
+}
+
+.accessibility-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    z-index: 1000;
+}

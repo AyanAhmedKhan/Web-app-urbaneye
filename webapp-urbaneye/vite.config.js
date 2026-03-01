@@ -7,13 +7,16 @@ import autoprefixer from 'autoprefixer'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    lingoCompilerPlugin({
-      sourceRoot: 'src',
-      sourceLocale: 'en',
-      targetLocales: ['hi', 'mr'],
-      models: 'lingo.dev',
-      dev: { usePseudotranslator: false },
-    }),
+    // Conditionally include lingo compiler to prevent exhausting API limits on Vercel
+    ...(process.env.VERCEL ? [] : [
+      lingoCompilerPlugin({
+        sourceRoot: 'src',
+        sourceLocale: 'en',
+        targetLocales: ['hi', 'mr'],
+        models: 'lingo.dev',
+        dev: { usePseudotranslator: false },
+      })
+    ]),
     react(),
   ],
   css: {
