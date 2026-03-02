@@ -11,11 +11,6 @@ if (isVercel && enableLingoPlugin) {
   process.env.LINGO_BUILD_MODE = 'cache-only'
 }
 
-// Lingo config requires GOOGLE_API_KEY for Gemini models
-if (process.env.VITE_GEMINI_API_KEY) {
-  process.env.GOOGLE_API_KEY = process.env.VITE_GEMINI_API_KEY;
-}
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
