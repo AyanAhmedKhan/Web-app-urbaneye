@@ -10,7 +10,7 @@ export default defineConfig({
     lingoCompilerPlugin({
       sourceRoot: 'src',
       sourceLocale: 'en',
-      targetLocales: ['hi', 'mr'],
+      targetLocales: ['hi'],
       models: 'lingo.dev',
       dev: { usePseudotranslator: false },
     }),
