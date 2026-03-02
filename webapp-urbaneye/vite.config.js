@@ -5,17 +5,16 @@ import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
-    lingoCompilerPlugin({
+    // Only use lingo in development to avoid translation issues in production
+    ...(mode === 'development' ? [lingoCompilerPlugin({
       sourceRoot: 'src',
       sourceLocale: 'en',
       targetLocales: ['hi'],
       models: 'lingo.dev',
       dev: { usePseudotranslator: false },
-      // Use extract mode - reads from pre-generated translations in src/lingo/
-      mode: 'extract',
-    }),
+    })] : []),
     react(),
   ],
   css: {
@@ -23,4 +22,4 @@ export default defineConfig({
       plugins: [tailwindcss, autoprefixer],
     },
   },
-})
+}))
