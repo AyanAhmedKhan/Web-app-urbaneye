@@ -13,6 +13,8 @@ export default defineConfig({
       targetLocales: ['hi'],
       models: 'lingo.dev',
       dev: { usePseudotranslator: false },
+      // Use extract mode - reads from pre-generated translations in src/lingo/
+      mode: 'extract',
     }),
     react(),
   ],
