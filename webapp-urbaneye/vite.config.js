@@ -16,7 +16,7 @@ export default defineConfig({
             sourceLocale: 'en',
             targetLocales: ['hi', 'mr'],
             models: 'lingo.dev',
-            mode: isProduction ? 'build' : 'translate', // 👈 THIS IS THE FIX
+            buildMode: isProduction ? 'cache-only' : 'translate',
             dev: { usePseudotranslator: false },
           }),
         ]
