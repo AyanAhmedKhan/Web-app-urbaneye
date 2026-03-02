@@ -5,8 +5,8 @@ import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
 const enableLingoPlugin = process.env.LINGO_ENABLE !== 'false'
+const isProduction = process.env.NODE_ENV === 'production'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     ...(enableLingoPlugin
@@ -16,6 +16,7 @@ export default defineConfig({
             sourceLocale: 'en',
             targetLocales: ['hi', 'mr'],
             models: 'lingo.dev',
+            mode: isProduction ? 'build' : 'translate', // 👈 THIS IS THE FIX
             dev: { usePseudotranslator: false },
           }),
         ]
@@ -28,4 +29,3 @@ export default defineConfig({
     },
   },
 })
-
