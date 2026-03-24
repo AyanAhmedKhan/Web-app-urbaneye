@@ -150,7 +150,7 @@ export const AccessibilityProvider = ({ children }) => {
         const root = document.documentElement;
 
         // Reset classes
-        root.classList.remove('font-size-small', 'font-size-large', 'contrast-dark', 'contrast-high', 'screen-reader-mode');
+        root.classList.remove('font-size-small', 'font-size-large', 'dark', 'contrast-high', 'screen-reader-mode');
 
         // Apply Font Size
         if (fontSize === 'small') {
@@ -161,7 +161,7 @@ export const AccessibilityProvider = ({ children }) => {
 
         // Apply Contrast
         if (contrastMode === 'dark') {
-            root.classList.add('contrast-dark');
+            root.classList.add('dark');
         } else if (contrastMode === 'high-contrast') {
             root.classList.add('contrast-high');
         }

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Brain, Zap, Flame, Gauge, AlertOctagon, Wifi, Link2, ChevronLeft, ChevronRight, Home, LogOut, Menu, X, Building2 } from 'lucide-react';
+import { Brain, Zap, Flame, Gauge, AlertOctagon, Wifi, Link2, ChevronLeft, ChevronRight, Home, LogOut, Menu, X, Building2, Droplets } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +7,7 @@ const links = [
     { label: 'AI Command Center', icon: Brain, route: '/ai-command-center', accent: '#6366f1' },
     { label: 'Electricity Dept', icon: Zap, route: '/electricity', accent: '#eab308' },
     { label: 'Gas Department', icon: Flame, route: '/gas', accent: '#f97316' },
+    { label: 'Water Department', icon: Droplets, route: '/water', accent: '#3b82f6' },
     { label: 'Smart Meters', icon: Gauge, route: '/smart-meters', accent: '#8b5cf6' },
     { label: 'Emergency Mode', icon: AlertOctagon, route: '/emergency-mode', accent: '#ef4444' },
     { label: 'IoT Devices', icon: Wifi, route: '/smart-city-devices', accent: '#06b6d4' },

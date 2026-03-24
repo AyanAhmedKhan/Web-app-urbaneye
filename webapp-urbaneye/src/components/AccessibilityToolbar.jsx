@@ -1,12 +1,17 @@
 import { useAccessibility } from '../context/AccessibilityContext';
-import { useLingoContext } from '@lingo.dev/compiler/react';
 import { Ear, EarOff, Sun, Moon, Type, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const LOCALES = [
     { code: 'en', label: 'English', flag: '\u{1F1EE}\u{1F1F3}' },
     { code: 'hi', label: '\u0939\u093F\u0928\u094D\u0926\u0940', flag: '\u{1F1EE}\u{1F1F3}' },
-    { code: 'mr', label: '\u092E\u0930\u093E\u0920\u0940', flag: '\u{1F1EE}\u{1F1F3}' },
+    { code: 'as', label: '\u0985\u09B8\u09AE\u09C0\u09AF\u09BC\u09BE', flag: '\u{1F1EE}\u{1F1F3}' },
 ];
+
+const getCookieLocale = () => {
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+    return match ? match[1] : 'en';
+};
 
 const AccessibilityToolbar = () => {
     const {
@@ -15,8 +20,19 @@ const AccessibilityToolbar = () => {
         screenReaderEnabled, setScreenReaderEnabled
     } = useAccessibility();
 
-    const { locale, setLocale } = useLingoContext();
+    const locale = getCookieLocale();
     const currentLocale = LOCALES.find((l) => l.code === locale) || LOCALES[0];
+
+    const setLocale = (code) => {
+        if (code === 'en') {
+            document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + window.location.hostname + "; path=/;";
+        } else {
+            document.cookie = `googtrans=/en/${code}; path=/;`;
+            document.cookie = `googtrans=/en/${code}; domain=${window.location.hostname}; path=/;`;
+        }
+        window.location.reload();
+    };
 
     const increaseFont = () => {
         if (fontSize === 'small') setFontSize('normal');
@@ -46,10 +62,18 @@ const AccessibilityToolbar = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="flex items-center justify-end h-9 divide-x divide-white/15">
 
+                            {/* Standard Gov Links */}
+                            <div className="hidden lg:flex items-center h-9 px-3 gap-4 text-[11px] font-medium text-slate-300">
+                                <a href="#main-content" className="hover:text-white transition-colors">Skip to Main Content</a>
+                                <Link to="/sitemap" className="hover:text-white transition-colors">View Sitemap</Link>
+                            </div>
+
                             {/* Theme / Contrast toggle */}
-                            <button
-                                onClick={toggleContrast}
-                                className="flex items-center gap-1.5 px-3 h-9 text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                            <div className="flex items-center px-3 h-9">
+                                <span className="hidden md:inline text-[11px] font-medium text-slate-300 mr-2">Change Colorscheme:</span>
+                                <button
+                                    onClick={toggleContrast}
+                                    className="flex items-center gap-1.5 h-7 px-2 rounded hover:bg-white/10 transition-colors text-[11px] font-semibold text-slate-300 hover:text-white"
                                 aria-label={`Current theme: ${contrastMode}. Click to change.`}
                                 title="Toggle contrast mode"
                             >
@@ -59,10 +83,12 @@ const AccessibilityToolbar = () => {
                                 <span className="hidden sm:inline">
                                     {contrastMode === 'light' ? 'Light' : contrastMode === 'dark' ? 'Dark' : 'Hi-Con'}
                                 </span>
-                            </button>
+                                </button>
+                            </div>
 
                             {/* Font Size controls */}
-                            <div className="flex items-center h-9">
+                            <div className="flex items-center h-9 px-3">
+                                <span className="hidden md:inline text-[11px] font-medium text-slate-300 mr-2">Accessibility:</span>
                                 <button
                                     onClick={increaseFont}
                                     disabled={fontSize === 'large'}

@@ -24,6 +24,8 @@ import SmartCityDevices from './pages/SmartCityDevices';
 import GovIntegration from './pages/GovIntegration';
 import ElectricityDepartment from './pages/ElectricityDepartment';
 import GasDepartment from './pages/GasDepartment';
+import WaterDepartment from './pages/WaterDepartment';
+import Sitemap from './pages/Sitemap';
 
 import AccessibilityToolbar from './components/AccessibilityToolbar';
 
@@ -98,6 +100,7 @@ function App() {
 
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
+                    <Route path="sitemap" element={<Sitemap />} />
 
                     <Route
                         path="book"
@@ -172,6 +175,14 @@ function App() {
                     element={
                         <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
                             <GasDepartment />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/water"
+                    element={
+                        <ProtectedRoute roles={['gov_admin', 'super_admin', 'dept_head', 'field_officer', 'civilian', 'gig_worker', 'social_worker']}>
+                            <WaterDepartment />
                         </ProtectedRoute>
                     }
                 />

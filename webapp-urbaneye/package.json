@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:translate": "vite --mode development",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -26,7 +27,6 @@
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
-    "@lingo.dev/compiler": "latest",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

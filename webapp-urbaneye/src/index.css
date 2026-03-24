@@ -47,17 +47,7 @@ html.font-size-large {
 }
 
 /* Contrast Modes using CSS Filters for robust and instant application */
-html.contrast-dark {
-    filter: invert(1) hue-rotate(180deg);
-    background-color: #111;
-}
 
-html.contrast-dark img,
-html.contrast-dark video,
-html.contrast-dark iframe {
-    /* Re-invert media so it looks normal */
-    filter: invert(1) hue-rotate(180deg);
-}
 
 html.contrast-high {
     filter: contrast(1.5) saturate(1.2);
@@ -86,4 +76,15 @@ body {
     right: 0;
     height: 44px;
     z-index: 1000;
+}
+
+/* Hide Google Translate UI elements */
+body {
+    top: 0 !important;
+}
+.skiptranslate iframe {
+    display: none !important;
+}
+#google_translate_element {
+    display: none !important;
 }
