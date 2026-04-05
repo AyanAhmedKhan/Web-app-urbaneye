@@ -34,7 +34,7 @@ UrbanEye is a full-stack civic issue management system that connects citizens, f
 Urbaneye/
 ├── mobileappUrbanEye/     # Flutter mobile app (Android/iOS)
 ├── webapp-urbaneye/       # React web dashboard
-└── UE_backend-main/       # Flask REST API
+└── UE_backend-main/       # Flask REST APIs
 ```
 
 ---
