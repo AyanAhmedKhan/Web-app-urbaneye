@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, Users, FileText, LogOut, Menu, X, Search, MapPin, RefreshCw,
@@ -102,6 +104,25 @@ const DeptHeadDashboard = () => {
         }
         setLoading(false);
     };
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveView('reports');
+            if (cmd.includes('delhi') || cmd.includes('gwalior') || cmd.includes('canberra')) {
+                speak('Advanced selection processed. Showing detailed reports layout.');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('home')) { setActiveView('overview'); speak('Opening Overview'); }
+        else if (cmd.includes('reports') || cmd.includes('manage reports')) { setActiveView('reports'); speak('Opening Reports'); }
+        else if (cmd.includes('team') || cmd.includes('staff')) { setActiveView('team'); speak('Opening Team Management'); }
+        else if (cmd.includes('analytics') || cmd.includes('charts')) { setActiveView('analytics'); speak('Opening Analytics'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     const handleAssign = async (officerId) => {
         if (!selectedReport) return;
@@ -870,6 +891,12 @@ const DeptHeadDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };

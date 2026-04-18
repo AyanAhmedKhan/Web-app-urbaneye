@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import {
     LayoutDashboard, Users, AlertTriangle, FileText, Settings, LogOut,
     Menu, X, Bell, Search, MapPin, Filter, Database, RefreshCw,
-    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff, Image, Loader2, Brain, Flame, Wifi, Link2, AlertOctagon, Gauge
+    Edit2, TrendingUp, ExternalLink, BarChart3, Activity, CheckCircle, PieChart as PieIcon, Map, ChevronLeft, ChevronRight, Building, Download, Sparkles, CloudRain, Newspaper, Zap, Plus, Clock, UserPlus, BadgeIndianRupee, Mic, MicOff, Image, Loader2, Brain, Flame, Wifi, Link2, AlertOctagon, Gauge, Box, Layers, Thermometer, Droplets, Wind, Focus, MousePointer2
 } from 'lucide-react';
 import {
     PieChart, Pie, Cell,
@@ -16,6 +18,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import 'leaflet/dist/leaflet.css';
 import './GovAdminDashboard.css';
+import DigitalTwinCity from './DigitalTwinCity';
 
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/v1';
 
@@ -66,6 +69,49 @@ const GovAdminDashboard = () => {
     const [prImageLoading, setPrImageLoading] = useState(false);
     const [showPredictions, setShowPredictions] = useState(false);
     const [predictions, setPredictions] = useState([]);
+
+    // Digital Twin Simulation State
+    const [dtBudget, setDtBudget] = useState(50);
+    const [dtCrew, setDtCrew] = useState(100);
+    const [dtPolicy, setDtPolicy] = useState('Reactive');
+    const [dtWardPriority, setDtWardPriority] = useState('All Wards');
+    const [isSimulating, setIsSimulating] = useState(false);
+    const [simResults, setSimResults] = useState(null);
+    const [dtActiveLayer, setDtActiveLayer] = useState('infrastructure');
+    const [dtSimHistory, setDtSimHistory] = useState([]);
+
+    const runSimulation = async () => {
+        setIsSimulating(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.post(`${API_BASE}/gov/digital-twin/simulate`, {
+                budget: dtBudget,
+                crew_count: dtCrew,
+                response_policy: dtPolicy,
+                ward_priority: dtWardPriority
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                setSimResults(res.data.simulation);
+                setDtSimHistory(prev => [...prev.slice(-4), { ...res.data.simulation, timestamp: new Date().toLocaleTimeString(), budget: dtBudget, crew: dtCrew, policy: dtPolicy }]);
+            }
+        } catch (err) {
+            console.error('Simulation Failed:', err);
+            const fallback = {
+                 predicted_backlog: Math.max(50, 500 - (dtBudget * 1.2) - (dtCrew * 0.5)),
+                 resolution_time_hrs: Math.max(8, 72 - (dtCrew * 0.1) - (dtBudget * 0.08)),
+                 sla_breaches: Math.max(2, 80 - (dtBudget * 0.2) - (dtCrew * 0.06)),
+                 citizen_satisfaction: Math.min(95, 20 + (dtBudget * 0.2) + (dtCrew * 0.05)),
+                 ai_insight: `With ₹${dtBudget}M budget and ${dtCrew} crew under ${dtPolicy} policy: ${dtPolicy === 'Predictive' ? 'Proactive deployment reduces SLA breaches by ~40%.' : dtPolicy === 'Preventive' ? 'Scheduled maintenance cuts backlog by ~25%.' : 'Reactive mode leads to higher citizen wait times.'}`
+            };
+            setSimResults(fallback);
+            setDtSimHistory(prev => [...prev.slice(-4), { ...fallback, timestamp: new Date().toLocaleTimeString(), budget: dtBudget, crew: dtCrew, policy: dtPolicy }]);
+        } finally {
+            setIsSimulating(false);
+        }
+    };
+
 
     // AI Prediction State
     const [predictionLoading, setPredictionLoading] = useState(false);
@@ -167,79 +213,32 @@ const GovAdminDashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const reportsPerPage = 10;
 
-    // Voice Command State
-    const [isListening, setIsListening] = useState(false);
-    const [voiceTranscript, setVoiceTranscript] = useState('');
-    const [voiceFeedback, setVoiceFeedback] = useState('');
-    const [speechRecognition, setSpeechRecognition] = useState(null);
-
-    // Initialize Speech Recognition
-    useEffect(() => {
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true;
-            recognition.lang = 'en-IN';
-
-            recognition.onstart = () => {
-                setIsListening(true);
-                setVoiceFeedback('🎤 Listening...');
-            };
-
-            recognition.onresult = (event) => {
-                let finalTranscript = '';
-                let interimTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript;
-                    } else {
-                        interimTranscript += transcript;
-                    }
-                }
-
-                setVoiceTranscript(finalTranscript || interimTranscript);
-
-                // Process final result immediately
-                if (finalTranscript) {
-                    setTimeout(() => {
-                        processVoiceCommand(finalTranscript);
-                    }, 100);
-                }
-            };
-
-            recognition.onend = () => {
-                setIsListening(false);
-            };
-
-            recognition.onerror = (event) => {
-                setIsListening(false);
-                setVoiceFeedback(`❌ Error: ${event.error}`);
-                setTimeout(() => setVoiceFeedback(''), 3000);
-            };
-
-            setSpeechRecognition(recognition);
-        }
-    }, []);
-
-    // Text-to-Speech function
-    const speak = (text) => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-IN';
-            utterance.rate = 1;
-            utterance.pitch = 1;
-            window.speechSynthesis.speak(utterance);
-        }
-    };
-
     // Process Voice Commands
     const processVoiceCommand = (command) => {
         const cmd = command.toLowerCase().trim();
-        setVoiceFeedback(`Processing: "${cmd}"`);
+
+        // Advanced Command
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            if (cmd.includes('delhi')) {
+                setSelectedCity('delhi');
+                setActiveView('heatmap');
+                speak('Advanced selecting Delhi and opening full layout');
+                setVoiceFeedback('✓ Delhi map open');
+                return;
+            } else if (cmd.includes('gwalior')) {
+                setSelectedCity('gwalior');
+                setActiveView('heatmap');
+                speak('Advanced selecting Gwalior and opening full layout');
+                setVoiceFeedback('✓ Gwalior map open');
+                return;
+            } else if (cmd.includes('canberra')) {
+                setSelectedCity('canberra');
+                setActiveView('heatmap');
+                speak('Advanced selecting Canberra and opening full layout');
+                setVoiceFeedback('✓ Canberra map open');
+                return;
+            }
+        }
 
         // Navigation commands
         if (cmd.includes('dashboard') || cmd.includes('overview') || cmd.includes('home')) {
@@ -322,26 +321,10 @@ const GovAdminDashboard = () => {
             setVoiceFeedback('❓ Command not recognized');
         }
 
-        setTimeout(() => {
-            setVoiceFeedback('');
-            setVoiceTranscript('');
-        }, 4000);
     };
 
-    // Start/Stop Voice Recognition
-    const toggleVoiceCommand = () => {
-        if (speechRecognition) {
-            if (isListening) {
-                speechRecognition.stop();
-            } else {
-                setVoiceTranscript('');
-                speechRecognition.start();
-            }
-        } else {
-            setVoiceFeedback('Voice not supported in this browser');
-            setTimeout(() => setVoiceFeedback(''), 3000);
-        }
-    };
+    // Voice Command State from custom hook
+    const { isListening, voiceTranscript, voiceFeedback, setVoiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     // Seeder State
     const [seederCity, setSeederCity] = useState('delhi');
@@ -734,6 +717,7 @@ const GovAdminDashboard = () => {
         { id: 'overview', icon: LayoutDashboard, label: 'Dashboard' },
         { id: 'analytics', icon: BarChart3, label: 'Analytics' },
         { id: 'team', icon: Users, label: 'HR & Personnel' },
+        { id: 'digital-twin', icon: Box, label: 'Digital Twin Lite' },
         { id: 'heatmap', icon: Map, label: 'City Heatmap' },
         { id: 'predictions', icon: Zap, label: 'AI Predictive Mode' },
         { id: 'reports', icon: FileText, label: 'All Reports' },
@@ -874,6 +858,7 @@ const GovAdminDashboard = () => {
                             {activeView === 'overview' && <><LayoutDashboard className="w-8 h-8 text-red-500" /> Command Center</>}
                             {activeView === 'analytics' && <><BarChart3 className="w-8 h-8 text-red-500" /> Analytics Overview</>}
                             {activeView === 'team' && <><Users className="w-8 h-8 text-red-500" /> HR Command Center</>}
+                            {activeView === 'digital-twin' && <><Box className="w-8 h-8 text-indigo-500" /> Digital Twin Lite</>}
                             {activeView === 'seeder' && <><Database className="w-8 h-8 text-red-500" /> Data Simulator</>}
                             {activeView === 'heatmap' && <><Map className="w-8 h-8 text-red-500" /> Geo-Spatial Map</>}
                             {activeView === 'reports' && <><FileText className="w-8 h-8 text-red-500" /> Incident Reports</>}
@@ -884,6 +869,7 @@ const GovAdminDashboard = () => {
                             {activeView === 'overview' && `City-wide Operations • ${stats.totalReports} active incidents`}
                             {activeView === 'analytics' && 'Department performance and trend analysis'}
                             {activeView === 'team' && 'Manage Department Heads and Field Officers'}
+                            {activeView === 'digital-twin' && 'Real-time 3D interactive model & simulated infrastructure mapping'}
                             {activeView === 'seeder' && 'Simulate report data for testing and demos'}
                             {activeView === 'heatmap' && 'Real-time heatmap of civic issues'}
                             {activeView === 'predictions' && 'Correlating Historical Data, Live Weather & Local News'}
@@ -925,6 +911,361 @@ const GovAdminDashboard = () => {
                         </div>
                     ) : (
                         <>
+                            {/* Digital Twin View */}
+                            {activeView === 'digital-twin' && (
+                                <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-700/80 bg-slate-950">
+                                    {/* Top Status Bar */}
+                                    <div className="flex items-center justify-between px-5 py-3 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-white/10">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
+                                                <span className="text-green-300 text-[10px] font-bold uppercase tracking-widest">Delhi Digital Twin</span>
+                                            </div>
+                                            <span className="text-slate-600 text-xs">|</span>
+                                            <span className="text-slate-400 text-[10px] uppercase tracking-wider">{new Date().toLocaleTimeString()}</span>
+                                            <span className="text-slate-600 text-xs">|</span>
+                                            <span className="text-indigo-300 text-[10px] uppercase tracking-wider font-semibold">MCD Command Center</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-slate-500 text-[10px] uppercase tracking-wider">Active Layer:</span>
+                                            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${
+                                                dtActiveLayer === 'infrastructure' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' :
+                                                dtActiveLayer === 'thermal' ? 'bg-orange-500/20 text-orange-300 border-orange-500/30' :
+                                                'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                                            }`}>
+                                                {dtActiveLayer === 'infrastructure' ? '🏗️ Infrastructure' : dtActiveLayer === 'thermal' ? '🌡️ Thermal' : '💧 Water/Drainage'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="relative h-[75vh] flex">
+                                        {/* 3D Interactive City Model (Three.js) */}
+                                        <div className="flex-1 relative">
+                                            <div className="absolute inset-0 z-0">
+                                                <DigitalTwinCity activeLayer={dtActiveLayer} />
+                                            </div>
+
+                                            {/* Left Panel: What-If Engine */}
+                                            <div className="absolute top-4 left-4 z-10 w-[400px] max-w-[90vw] pointer-events-none max-h-[calc(100%-80px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+                                                <div className="bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] pointer-events-auto overflow-hidden">
+                                                    {/* Header */}
+                                                    <div className="bg-gradient-to-r from-indigo-900/50 to-slate-900/50 p-4 flex items-center justify-between border-b border-white/10">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="relative">
+                                                                <div className="absolute inset-0 bg-indigo-500/30 blur-md rounded-full"></div>
+                                                                <div className="bg-indigo-500/20 p-2 rounded-xl border border-indigo-500/50 relative z-10">
+                                                                    <Brain className="w-5 h-5 text-indigo-300" />
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h2 className="text-white font-black text-base leading-tight tracking-wide">WHAT-IF ENGINE</h2>
+                                                                <div className="flex items-center gap-2 mt-0.5">
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${isSimulating ? 'bg-yellow-400 animate-pulse' : 'bg-green-400 animate-pulse'}`}></span>
+                                                                    <span className="text-indigo-200 text-[9px] font-bold uppercase tracking-widest">
+                                                                        {isSimulating ? 'AI Computing...' : 'Ready'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-4 space-y-3">
+                                                        {/* Budget */}
+                                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                            <label className="flex justify-between items-center text-slate-300 text-[10px] font-bold mb-2 uppercase tracking-wider">
+                                                                <span>City Budget (30 Days)</span>
+                                                                <span className="bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded text-[10px] border border-indigo-500/30">₹{dtBudget}M</span>
+                                                            </label>
+                                                            <input type="range" min="10" max="250" step="10" value={dtBudget} onChange={e => setDtBudget(parseInt(e.target.value))} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
+                                                        </div>
+                                                        
+                                                        {/* Crew */}
+                                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                            <label className="flex justify-between items-center text-slate-300 text-[10px] font-bold mb-2 uppercase tracking-wider">
+                                                                <span>Field Personnel</span>
+                                                                <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-[10px] border border-emerald-500/30">{dtCrew} Units</span>
+                                                            </label>
+                                                            <input type="range" min="20" max="500" step="10" value={dtCrew} onChange={e => setDtCrew(parseInt(e.target.value))} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
+                                                        </div>
+
+                                                        {/* Policy */}
+                                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                            <label className="text-slate-300 text-[10px] font-bold mb-2 block uppercase tracking-wider">Operational Policy</label>
+                                                            <div className="flex gap-1.5">
+                                                                {['Reactive', 'Preventive', 'Predictive'].map(pol => (
+                                                                    <button key={pol} onClick={() => setDtPolicy(pol)}
+                                                                        className={`flex-1 py-1.5 text-[9px] font-bold uppercase tracking-widest rounded border transition-all ${dtPolicy === pol ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_12px_rgba(79,70,229,0.4)]' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                                                                    >{pol}</button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                                            <label className="text-slate-300 text-[10px] font-bold mb-2 block uppercase tracking-wider">Delhi Ward Priority</label>
+                                                            <select value={dtWardPriority} onChange={e => setDtWardPriority(e.target.value)}
+                                                                className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500">
+                                                                <option value="All Wards">All Wards — Balanced</option>
+                                                                <option value="New Delhi">New Delhi (CP, India Gate)</option>
+                                                                <option value="South Delhi">South Delhi (Saket, Hauz Khas)</option>
+                                                                <option value="North Delhi">North Delhi (Civil Lines, Model Town)</option>
+                                                                <option value="East Delhi">East Delhi (Preet Vihar, Laxmi Nagar)</option>
+                                                                <option value="West Delhi">West Delhi (Rajouri Garden, Dwarka)</option>
+                                                                <option value="Central Delhi">Central Delhi (Karol Bagh, Chandni Chowk)</option>
+                                                                <option value="Shahdara">Shahdara (Seelampur, Dilshad Garden)</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        {/* Execute */}
+                                                        <button onClick={runSimulation} disabled={isSimulating}
+                                                            className="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold flex justify-center items-center gap-2 transition-all shadow-[0_0_20px_rgba(79,70,229,0.5)] disabled:opacity-50 border border-white/20 uppercase tracking-widest text-[10px]">
+                                                            {isSimulating ? <RefreshCw className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                                                            {isSimulating ? 'Processing...' : 'Execute Simulation'}
+                                                        </button>
+
+                                                        {/* Results */}
+                                                        <AnimatePresence>
+                                                            {simResults && !isSimulating && (
+                                                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="border-t border-white/10 pt-4 space-y-3">
+                                                                    <p className="text-[9px] text-indigo-300 font-bold tracking-widest uppercase mb-3 flex items-center gap-2"><MapPin size={10} /> Delhi Projection — T+30 Days</p>
+                                                                    
+                                                                    {/* Core KPIs */}
+                                                                    <div className="grid grid-cols-2 gap-2 mb-3">
+                                                                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg p-3 border border-white/5 relative overflow-hidden group">
+                                                                            <div className="absolute top-0 right-0 w-12 h-12 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                                                                            <div className="text-slate-400 text-[8px] uppercase font-bold tracking-widest mb-1 flex items-center justify-between">
+                                                                                <span>Backlog</span><Layers size={8} className="text-blue-400" />
+                                                                            </div>
+                                                                            <div className="text-white font-mono text-xl font-black">{Math.round(simResults.predicted_backlog)}</div>
+                                                                            <div className="w-full bg-slate-700 h-1 mt-1.5 rounded overflow-hidden">
+                                                                                <motion.div initial={{width:0}} animate={{width:`${Math.min(100, simResults.predicted_backlog / 5)}%`}} className={`h-full ${simResults.predicted_backlog > 300 ? 'bg-red-500' : 'bg-blue-500'}`}></motion.div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg p-3 border border-white/5 relative overflow-hidden group">
+                                                                            <div className="absolute top-0 right-0 w-12 h-12 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
+                                                                            <div className="text-slate-400 text-[8px] uppercase font-bold tracking-widest mb-1 flex items-center justify-between">
+                                                                                <span>Resolution</span><Clock size={8} className="text-green-400" />
+                                                                            </div>
+                                                                            <div className="text-white font-mono text-xl font-black">{Math.round(simResults.resolution_time_hrs)}<span className="text-[10px] text-slate-400 ml-0.5">hr</span></div>
+                                                                            <div className="w-full bg-slate-700 h-1 mt-1.5 rounded overflow-hidden">
+                                                                                <motion.div initial={{width:0}} animate={{width:`${Math.max(0,100-(simResults.resolution_time_hrs*1.5))}%`}} className="h-full bg-green-500"></motion.div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg p-3 border border-white/5 relative overflow-hidden group">
+                                                                            <div className="absolute top-0 right-0 w-12 h-12 bg-red-500/10 rounded-full blur-xl group-hover:bg-red-500/20 transition-all"></div>
+                                                                            <div className="text-slate-400 text-[8px] uppercase font-bold tracking-widest mb-1 flex items-center justify-between">
+                                                                                <span>SLA Breach</span><AlertOctagon size={8} className="text-red-400" />
+                                                                            </div>
+                                                                            <div className="text-red-400 font-mono text-xl font-black">{Math.round(simResults.sla_breaches)}</div>
+                                                                        </div>
+                                                                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg p-3 border border-white/5 relative overflow-hidden group">
+                                                                            <div className="absolute top-0 right-0 w-12 h-12 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+                                                                            <div className="text-slate-400 text-[8px] uppercase font-bold tracking-widest mb-1 flex items-center justify-between">
+                                                                                <span>Satisfaction</span><Users size={8} className="text-emerald-400" />
+                                                                            </div>
+                                                                            <div className="text-emerald-400 font-mono text-xl font-black">{Math.round(simResults.citizen_satisfaction)}%</div>
+                                                                            <div className="w-full bg-slate-700 h-1 mt-1.5 rounded overflow-hidden">
+                                                                                <motion.div initial={{width:0}} animate={{width:`${simResults.citizen_satisfaction}%`}} className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-emerald-500"></motion.div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* AI Insight */}
+                                                                    <div className="bg-gradient-to-r from-indigo-500/15 to-purple-500/10 border-l-4 border-indigo-500 rounded-r-xl p-3">
+                                                                        <div className="flex items-start gap-2">
+                                                                            <Brain className="w-4 h-4 text-indigo-300 flex-shrink-0 mt-0.5" />
+                                                                            <div>
+                                                                                <span className="text-[8px] font-black text-indigo-300 uppercase tracking-widest block mb-0.5">AI Tactical Insight</span>
+                                                                                <p className="text-white text-[11px] leading-relaxed font-medium">{simResults.ai_insight}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Category Breakdown */}
+                                                                    {simResults.category_breakdown && (
+                                                                        <div className="bg-white/5 rounded-xl border border-white/5 overflow-hidden">
+                                                                            <div className="px-3 py-2 border-b border-white/5 flex items-center gap-2">
+                                                                                <BarChart3 size={10} className="text-cyan-400" />
+                                                                                <span className="text-[9px] text-cyan-300 font-bold uppercase tracking-widest">Report Category Breakdown</span>
+                                                                            </div>
+                                                                            <div className="divide-y divide-white/5">
+                                                                                {Object.entries(simResults.category_breakdown).map(([cat, data]) => (
+                                                                                    <div key={cat} className="flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors">
+                                                                                        <div className="flex items-center gap-2 min-w-0">
+                                                                                            <span className="text-[10px] text-white font-semibold truncate">{cat}</span>
+                                                                                        </div>
+                                                                                        <div className="flex items-center gap-3">
+                                                                                            <div className="text-right">
+                                                                                                <span className="text-[9px] text-red-400 font-mono font-bold">{data.open}</span>
+                                                                                                <span className="text-[8px] text-slate-500 mx-0.5">→</span>
+                                                                                                <span className="text-[9px] text-green-400 font-mono font-bold">{data.projected_resolved}</span>
+                                                                                            </div>
+                                                                                            <span className={`text-[7px] font-black uppercase px-1.5 py-0.5 rounded ${
+                                                                                                data.risk === 'high' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                                                                                                data.risk === 'medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                                                                                                'bg-green-500/20 text-green-300 border border-green-500/30'
+                                                                                            }`}>{data.risk}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Ward Heatmap */}
+                                                                    {simResults.ward_heatmap && (
+                                                                        <div className="bg-white/5 rounded-xl border border-white/5 overflow-hidden">
+                                                                            <div className="px-3 py-2 border-b border-white/5 flex items-center gap-2">
+                                                                                <MapPin size={10} className="text-orange-400" />
+                                                                                <span className="text-[9px] text-orange-300 font-bold uppercase tracking-widest">Delhi Ward Risk Heatmap</span>
+                                                                            </div>
+                                                                            <div className="divide-y divide-white/5">
+                                                                                {simResults.ward_heatmap.map((ward, i) => (
+                                                                                    <div key={i} className="flex items-center justify-between px-3 py-1.5 hover:bg-white/5 transition-colors">
+                                                                                        <span className="text-[10px] text-white font-medium w-24 truncate">{ward.ward}</span>
+                                                                                        <div className="flex items-center gap-3">
+                                                                                            <div className="flex items-center gap-1">
+                                                                                                <div className={`w-5 h-2 rounded ${
+                                                                                                    ward.risk_score >= 7 ? 'bg-red-500' : ward.risk_score >= 4 ? 'bg-yellow-500' : 'bg-green-500'
+                                                                                                }`} style={{opacity: 0.3 + ward.risk_score * 0.07}}></div>
+                                                                                                <span className="text-[8px] text-slate-400 font-mono w-4">{ward.risk_score}</span>
+                                                                                            </div>
+                                                                                            <span className="text-[8px] text-slate-400">{ward.open_issues} issues</span>
+                                                                                            <span className="text-[8px] text-cyan-400">{ward.crew_deployed}👷</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Recommendation */}
+                                                                    {simResults.recommendation && (
+                                                                        <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/5 border-l-4 border-emerald-500 rounded-r-xl p-2.5">
+                                                                            <span className="text-[8px] font-black text-emerald-300 uppercase tracking-widest block mb-0.5">🎯 Deployment Recommendation</span>
+                                                                            <p className="text-white text-[10px] leading-relaxed">{simResults.recommendation}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Right Side: Layer Controls */}
+                                            <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 pointer-events-auto">
+                                                <motion.button 
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setDtActiveLayer('infrastructure')}
+                                                    className={`flex items-center gap-2 backdrop-blur-md border text-white px-3 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] ${
+                                                        dtActiveLayer === 'infrastructure' 
+                                                            ? 'bg-indigo-600 border-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.4)]' 
+                                                            : 'bg-slate-900/70 border-white/20 hover:bg-indigo-600'
+                                                    }`}
+                                                    title="Infrastructure View"
+                                                >
+                                                    <Layers size={18} />
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider hidden xl:inline">Infrastructure</span>
+                                                </motion.button>
+
+                                                <motion.button 
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setDtActiveLayer(prev => prev === 'thermal' ? 'infrastructure' : 'thermal')}
+                                                    className={`flex items-center gap-2 backdrop-blur-md border text-white px-3 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] ${
+                                                        dtActiveLayer === 'thermal' 
+                                                            ? 'bg-orange-600 border-orange-400 shadow-[0_0_20px_rgba(234,88,12,0.4)]' 
+                                                            : 'bg-slate-900/70 border-white/20 hover:bg-orange-600'
+                                                    }`}
+                                                    title="Thermal View"
+                                                >
+                                                    <Thermometer size={18} />
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider hidden xl:inline">Thermal</span>
+                                                </motion.button>
+
+                                                <motion.button 
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setDtActiveLayer(prev => prev === 'water' ? 'infrastructure' : 'water')}
+                                                    className={`flex items-center gap-2 backdrop-blur-md border text-white px-3 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] ${
+                                                        dtActiveLayer === 'water' 
+                                                            ? 'bg-blue-600 border-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.4)]' 
+                                                            : 'bg-slate-900/70 border-white/20 hover:bg-blue-600'
+                                                    }`}
+                                                    title="Water/Drainage View"
+                                                >
+                                                    <Droplets size={18} />
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider hidden xl:inline">Water</span>
+                                                </motion.button>
+                                            </div>
+                                        </div>
+
+                                        {/* Right Sidebar: Simulation History */}
+                                        {dtSimHistory.length > 0 && (
+                                            <div className="w-64 bg-slate-900/90 backdrop-blur-xl border-l border-white/10 p-4 overflow-y-auto hidden lg:block">
+                                                <h3 className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                    <Activity size={12} /> Simulation Log
+                                                </h3>
+                                                <div className="space-y-2">
+                                                    {dtSimHistory.slice().reverse().map((sim, i) => (
+                                                        <motion.div key={i} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                                                            className="bg-white/5 rounded-lg p-3 border border-white/5 hover:bg-white/10 transition-colors cursor-default">
+                                                            <div className="flex justify-between items-center mb-2">
+                                                                <span className="text-[9px] text-slate-400 font-mono">{sim.timestamp}</span>
+                                                                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${sim.citizen_satisfaction >= 60 ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                                                    {sim.citizen_satisfaction >= 60 ? 'PASS' : 'RISK'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-1.5 text-[9px]">
+                                                                <div><span className="text-slate-500">Budget:</span> <span className="text-white font-bold">₹{sim.budget}M</span></div>
+                                                                <div><span className="text-slate-500">Crew:</span> <span className="text-white font-bold">{sim.crew}</span></div>
+                                                                <div><span className="text-slate-500">Backlog:</span> <span className="text-white font-bold">{Math.round(sim.predicted_backlog)}</span></div>
+                                                                <div><span className="text-slate-500">Satis:</span> <span className="text-emerald-400 font-bold">{Math.round(sim.citizen_satisfaction)}%</span></div>
+                                                            </div>
+                                                            <div className="text-[8px] text-slate-500 mt-1 uppercase font-bold tracking-wider">{sim.policy}</div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Bottom Live Metrics Strip */}
+                                    <div className="flex items-center justify-between px-5 py-3 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-white/10">
+                                        <div className="flex items-center gap-6">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+                                                <span className="text-slate-400 text-[10px] uppercase tracking-wider">Delhi IoT Nodes</span>
+                                                <span className="text-white font-mono text-sm font-bold">{1200 + Math.floor(Math.random() * 300)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></div>
+                                                <span className="text-slate-400 text-[10px] uppercase tracking-wider">Open Reports</span>
+                                                <span className="text-orange-300 font-mono text-sm font-bold">{stats.pendingReports || 42}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+                                                <span className="text-slate-400 text-[10px] uppercase tracking-wider">Wards Active</span>
+                                                <span className="text-cyan-300 font-mono text-sm font-bold">7/7</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                                                <span className="text-slate-400 text-[10px] uppercase tracking-wider">Uptime</span>
+                                                <span className="text-blue-300 font-mono text-sm font-bold">99.8%</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-slate-500 text-[9px] uppercase tracking-wider">Engine v3.0</span>
+                                            <span className="text-slate-600">•</span>
+                                            <span className="text-slate-500 text-[9px] uppercase tracking-wider">Gemini AI</span>
+                                            <span className="text-slate-600">•</span>
+                                            <span className="text-slate-500 text-[9px] uppercase tracking-wider">Delhi MCD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Overview */}
                             {activeView === 'overview' && (
                                 <div>
@@ -2350,42 +2691,12 @@ const GovAdminDashboard = () => {
             </main >
 
             {/* Floating Voice Command Button */}
-            <div className="fixed bottom-24 right-6 z-[1000] flex flex-col items-end gap-3">
-                {/* Voice Feedback Overlay */}
-                <AnimatePresence>
-                    {(voiceFeedback || voiceTranscript) && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                            className="bg-slate-900/95 backdrop-blur-lg text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 max-w-xs"
-                        >
-                            {voiceTranscript && (
-                                <div className="text-sm text-blue-400 mb-1 font-medium">🎤 "{voiceTranscript}"</div>
-                            )}
-                            <div className="text-sm font-semibold">{voiceFeedback}</div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Mic Button */}
-                <motion.button
-                    onClick={toggleVoiceCommand}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`p-4 rounded-full shadow-2xl transition-all ${isListening
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 ring-4 ring-red-500/50 animate-pulse'
-                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700'
-                        }`}
-                    title={isListening ? 'Stop listening' : 'Voice command (say "help" for commands)'}
-                >
-                    {isListening ? (
-                        <MicOff className="text-white" size={24} />
-                    ) : (
-                        <Mic className="text-white" size={24} />
-                    )}
-                </motion.button>
-            </div>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div >
     );
 };

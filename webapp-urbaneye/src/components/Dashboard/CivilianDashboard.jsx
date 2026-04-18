@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import {
     MapPin, Calendar, CheckCircle, Zap, ArrowRight, TrendingUp,
     LayoutDashboard, FileText, Shield, LogOut, RefreshCw, X,
@@ -41,6 +43,40 @@ const CivilianDashboard = ({ user }) => {
     const [leaderboard, setLeaderboard] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [ngoRequests, setNgoRequests] = useState([]);
+    const [mapCenter, setMapCenter] = useState([28.6139, 77.209]);
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveTab('overview');
+            setViewMode('map');
+            if (cmd.includes('delhi')) {
+                setMapCenter([28.6139, 77.209]);
+                speak('Advanced selecting Delhi and opening full map view');
+            } else if (cmd.includes('gwalior')) {
+                setMapCenter([26.2183, 78.1828]);
+                speak('Advanced selecting Gwalior and opening full map view');
+            } else if (cmd.includes('canberra')) {
+                setMapCenter([-35.2809, 149.1300]);
+                speak('Advanced selecting Canberra and opening full map view');
+            } else {
+                speak('City not recognized for advanced selection');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('dashboard')) { setActiveTab('overview'); speak('Opening Dashboard'); }
+        else if (cmd.includes('my reports')) { setActiveTab('reports'); speak('Opening My Reports'); }
+        else if (cmd.includes('leaderboard')) { setActiveTab('leaderboard'); speak('Opening Leaderboard'); }
+        else if (cmd.includes('gig worker') || cmd.includes('book gig')) { setActiveTab('gig'); speak('Opening Gig Workers'); }
+        else if (cmd.includes('ngo')) { setActiveTab('ngo'); speak('Opening NGO Help'); }
+        else if (cmd.includes('rewards') || cmd.includes('portfolio')) { setActiveTab('rewards'); speak('Opening Rewards'); }
+        else if (cmd.includes('map view')) { setActiveTab('overview'); setViewMode('map'); speak('Opening Map View'); }
+        else if (cmd.includes('list view')) { setActiveTab('overview'); setViewMode('list'); speak('Opening List View'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     useEffect(() => {
         fetchMyReports();
@@ -246,7 +282,7 @@ const CivilianDashboard = ({ user }) => {
 
             {viewMode === 'map' ? (
                 <div className="h-[500px] rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl">
-                    <MapContainer center={[28.6139, 77.209]} zoom={12} style={{ height: '100%', width: '100%' }}>
+                    <MapContainer key={mapCenter.join(',')} center={mapCenter} zoom={12} style={{ height: '100%', width: '100%' }}>
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap' />
                         {reports.filter(r => r.latitude && r.longitude).map(report => (
                             <Marker key={report.id} position={[report.latitude, report.longitude]}>
@@ -605,6 +641,12 @@ const CivilianDashboard = ({ user }) => {
                     )}
                 </div>
             </main>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };

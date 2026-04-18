@@ -909,7 +909,7 @@ const Home = () => {
                             <span className="text-indigo-400 font-bold text-sm uppercase tracking-wider">About Us</span>
                         </motion.div>
                         <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-4 sm:mb-6">
-                            Team <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Solaris</span>
+                            Team <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Absolute</span>
                         </h2>
                         <p className="text-lg sm:text-2xl text-slate-300">
                             From <span className="font-bold text-white">MITS Gwalior</span>

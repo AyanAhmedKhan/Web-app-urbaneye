@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import {
@@ -87,6 +89,38 @@ const SuperAdminDashboard = () => {
     useEffect(() => {
         fetchDashboardData();
     }, []);
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveView('map');
+            if (cmd.includes('delhi')) {
+                setSelectedCity('delhi');
+                speak('Advanced selecting Delhi and opening map full layout');
+            } else if (cmd.includes('gwalior')) {
+                setSelectedCity('gwalior');
+                speak('Advanced selecting Gwalior and opening map full layout');
+            } else if (cmd.includes('canberra')) {
+                setSelectedCity('canberra');
+                speak('Advanced selecting Canberra and opening map full layout');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('home') || cmd.includes('dashboard')) { setActiveView('overview'); speak('Opening Overview'); }
+        else if (cmd.includes('analytics') || cmd.includes('charts')) { setActiveView('analytics'); speak('Opening Analytics'); }
+        else if (cmd.includes('live map') || cmd.includes('map view')) { setActiveView('map'); speak('Opening Live Map'); }
+        else if (cmd.includes('reports')) { setActiveView('reports'); speak('Opening Reports'); }
+        else if (cmd.includes('user management') || cmd.includes('users')) { setActiveView('users'); speak('Opening User Management'); }
+        else if (cmd.includes('data seeder') || cmd.includes('seed')) { setActiveView('seed'); speak('Opening Data Seeder'); }
+        else if (cmd.includes('settings')) { setActiveView('settings'); speak('Opening Settings'); }
+        else if (cmd.includes('delhi')) { setSelectedCity('delhi'); speak('Filtering to Delhi'); }
+        else if (cmd.includes('gwalior')) { setSelectedCity('gwalior'); speak('Filtering to Gwalior'); }
+        else if (cmd.includes('canberra')) { setSelectedCity('canberra'); speak('Filtering to Canberra'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     useEffect(() => {
         calculateAnalytics(reports);
@@ -319,6 +353,12 @@ const SuperAdminDashboard = () => {
                     {activeView === 'users' && <UserManagementView />}
                 </div>
             </main>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };

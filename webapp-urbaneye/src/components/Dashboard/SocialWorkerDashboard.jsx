@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, LogOut, Menu, X, RefreshCw, ChevronRight, ChevronLeft,
@@ -48,6 +50,26 @@ const SocialWorkerDashboard = () => {
     const handleCompleteRequest = (requestId) => {
         setHelpRequests(helpRequests.map(r => r.id === requestId ? { ...r, status: 'completed' } : r));
     };
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveView('requests');
+            if (cmd.includes('delhi') || cmd.includes('gwalior') || cmd.includes('canberra')) {
+                speak('Advanced selection processed. Showing detailed requests layout.');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('home')) { setActiveView('overview'); speak('Opening Overview'); }
+        else if (cmd.includes('requests') || cmd.includes('help requests')) { setActiveView('requests'); speak('Opening Help Requests'); }
+        else if (cmd.includes('active cases') || cmd.includes('active')) { setActiveView('active'); speak('Opening Active Cases'); }
+        else if (cmd.includes('volunteers') || cmd.includes('team')) { setActiveView('volunteers'); speak('Opening Volunteers'); }
+        else if (cmd.includes('impact') || cmd.includes('stats')) { setActiveView('impact'); speak('Opening Impact Stats'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -624,6 +646,12 @@ const SocialWorkerDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };

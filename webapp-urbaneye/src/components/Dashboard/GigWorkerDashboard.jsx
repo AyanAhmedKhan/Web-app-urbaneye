@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, LogOut, Menu, X, RefreshCw, ChevronRight, ChevronLeft,
@@ -43,6 +45,26 @@ const GigWorkerDashboard = () => {
     const handleCompleteJob = (jobId) => {
         setJobs(jobs.map(j => j.id === jobId ? { ...j, status: 'completed' } : j));
     };
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveView('map');
+            if (cmd.includes('delhi') || cmd.includes('gwalior') || cmd.includes('canberra')) {
+                speak('Advanced selection processed. Showing detailed map layout.');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('home')) { setActiveView('overview'); speak('Opening Overview'); }
+        else if (cmd.includes('available jobs') || cmd.includes('find jobs')) { setActiveView('available'); speak('Opening Available Jobs'); }
+        else if (cmd.includes('active jobs') || cmd.includes('active')) { setActiveView('active'); speak('Opening Active Jobs'); }
+        else if (cmd.includes('earnings') || cmd.includes('wallet')) { setActiveView('earnings'); speak('Opening Earnings'); }
+        else if (cmd.includes('map') || cmd.includes('job map')) { setActiveView('map'); speak('Opening Job Map'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -546,6 +568,12 @@ const GigWorkerDashboard = () => {
                     </AnimatePresence>
                 </div>
             </main>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };

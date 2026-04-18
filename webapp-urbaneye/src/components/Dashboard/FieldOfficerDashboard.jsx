@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVoiceCommand } from '../../hooks/useVoiceCommand';
+import VoiceAssistantButton from '../common/VoiceAssistantButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, CheckCircle, FileText, LogOut,
@@ -57,6 +59,27 @@ const FieldOfficerDashboard = () => {
         }
         setLoading(false);
     };
+
+    const processVoiceCommand = (command) => {
+        const cmd = command.toLowerCase().trim();
+
+        if (cmd.includes('advance select') && cmd.includes('full')) {
+            setActiveView('map');
+            if (cmd.includes('delhi') || cmd.includes('gwalior') || cmd.includes('canberra')) {
+                speak('Advanced selection processed. Showing detailed map layout.');
+            }
+            return;
+        }
+
+        if (cmd.includes('overview') || cmd.includes('home')) { setActiveView('overview'); speak('Opening Overview'); }
+        else if (cmd.includes('my tasks') || cmd.includes('tasks')) { setActiveView('tasks'); speak('Opening My Tasks'); }
+        else if (cmd.includes('map view') || cmd.includes('map')) { setActiveView('map'); speak('Opening Map View'); }
+        else if (cmd.includes('completed')) { setActiveView('completed'); speak('Opening Completed Tasks'); }
+        else if (cmd.includes('performance') || cmd.includes('stats')) { setActiveView('performance'); speak('Opening Performance'); }
+        else if (cmd.includes('activity')) { setActiveView('activity'); speak('Opening Activity Log'); }
+    };
+
+    const { isListening, voiceTranscript, voiceFeedback, toggleVoiceCommand, speak } = useVoiceCommand(processVoiceCommand);
 
     const stats = useMemo(() => {
         const assigned = tasks.filter(t => t.status === 'assigned').length;
@@ -948,6 +971,12 @@ const FieldOfficerDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <VoiceAssistantButton
+                isListening={isListening}
+                voiceTranscript={voiceTranscript}
+                voiceFeedback={voiceFeedback}
+                toggleVoiceCommand={toggleVoiceCommand}
+            />
         </div>
     );
 };
